@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"github.com/ebrahimahmadi/ar-cli/pkg/http"
 	"github.com/spf13/cobra"
 )
 
@@ -28,7 +29,13 @@ var create = &cobra.Command{
 	Short: "create a domain",
 	Long:  descriptions["create"],
 	Run: func(cmd *cobra.Command, args []string) {
-		// TODO: Implement logic
+		// todo: implement validation
+		payload := map[string]string{
+			"domain": args[0],
+		}
+
+		// todo: READ FROM CONFIG FILE
+		http.Post("https://napi.arvancloud.com/cdn/4.0/domains/dns-service", payload)
 	},
 }
 
@@ -64,7 +71,7 @@ var list = &cobra.Command{
 	Short: "get list of all NS records",
 	Long:  descriptions["list"],
 	Run: func(cmd *cobra.Command, args []string) {
-		// TODO: Implement logic
+		// TODO: Implement list
 	},
 }
 
