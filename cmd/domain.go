@@ -1,51 +1,89 @@
-/*
-Copyright © 2021 NAME HERE <EMAIL ADDRESS>
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
 package cmd
 
 import (
-	"fmt"
-
 	"github.com/spf13/cobra"
 )
 
-// domainCmd represents the domain command
+var descriptions = map[string]string{
+	"command": "Create, Search, Delete, Get, Health check and get Ns records ",
+	"search":  "Leaving the 'search' flag is empty, will return all domains. Otherwise, it will filter domains containing the search keyword.",
+	"create":  "Create new domain",
+	"info":    "Get information of the domain",
+	"remove":  "Remove the domain",
+	"list":    "Get list of domain's root NS records and expected values",
+	"check":   "Check NS to find whether domain is activated",
+}
+
 var domainCmd = &cobra.Command{
 	Use:   "domain",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "Interact with domains",
+	Long:  descriptions["command"],
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("domain called")
+		// TODO: Implement logic
+	},
+}
+
+var create = &cobra.Command{
+	Use:   "create",
+	Short: "create a domain",
+	Long:  descriptions["create"],
+	Run: func(cmd *cobra.Command, args []string) {
+		// TODO: Implement logic
+	},
+}
+
+var search = &cobra.Command{
+	Use:   "search",
+	Short: "search domains",
+	Long:  descriptions["search"],
+	Run: func(cmd *cobra.Command, args []string) {
+		// TODO: Implement logic
+	},
+}
+
+var info = &cobra.Command{
+	Use:   "info",
+	Short: "get a domain info",
+	Long:  descriptions["info"],
+	Run: func(cmd *cobra.Command, args []string) {
+		// TODO: Implement logic
+	},
+}
+
+var remove = &cobra.Command{
+	Use:   "remove",
+	Short: "remove a domain",
+	Long:  descriptions["remove"],
+	Run: func(cmd *cobra.Command, args []string) {
+		// TODO: Implement logic
+	},
+}
+
+var list = &cobra.Command{
+	Use:   "list",
+	Short: "get list of all NS records",
+	Long:  descriptions["list"],
+	Run: func(cmd *cobra.Command, args []string) {
+		// TODO: Implement logic
+	},
+}
+
+var check = &cobra.Command{
+	Use:   "check",
+	Short: "ensure domain is active",
+	Long:  descriptions["check"],
+	Run: func(cmd *cobra.Command, args []string) {
+		// TODO: Implement logic
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(domainCmd)
 
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// domainCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// domainCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	domainCmd.AddCommand(search)
+	domainCmd.AddCommand(create)
+	domainCmd.AddCommand(info)
+	domainCmd.AddCommand(list)
+	domainCmd.AddCommand(check)
+	domainCmd.AddCommand(remove)
 }
