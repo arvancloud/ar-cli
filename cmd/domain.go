@@ -18,7 +18,7 @@ type InfoResponse struct {
 }
 
 type Domain struct {
-	Name string `json:"name"`
+	Name   string `json:"name"`
 	Domain string `json:"domain"`
 	Status string `json:"status"`
 }
@@ -26,14 +26,14 @@ type Domain struct {
 var infoDomainName string
 
 var descriptions = map[string]string{
-	"command": "Create, Search, Delete, Get, Health check and get Ns records ",
-	"search":  "Leaving the 'search' flag is empty, will return all domains. Otherwise, it will filter domains containing the search keyword.",
-	"create":  "Create new domain",
-	"info":    "Get information of the domain",
+	"command":          "Create, Search, Delete, Get, Health check and get Ns records ",
+	"search":           "Leaving the 'search' flag is empty, will return all domains. Otherwise, it will filter domains containing the search keyword.",
+	"create":           "Create new domain",
+	"info":             "Get information of the domain",
 	"info-domain-name": "The host name you want to see the details. ex: example.com",
-	"remove":  "Remove the domain",
-	"list":    "Get list of domain's root NS records and expected values",
-	"check":   "Check NS to find whether domain is activated",
+	"remove":           "Remove the domain",
+	"list":             "Get list of domain's root NS records and expected values",
+	"check":            "Check NS to find whether domain is activated",
 }
 
 var domainCmd = &cobra.Command{
@@ -67,7 +67,7 @@ var search = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		// todo: READ FROM CONFIG FILE
 		// todo: Add search parameter
-		res, _:= http.Get("https://napi.arvancloud.com/cdn/4.0/domains", nil)
+		res, _ := http.Get("https://napi.arvancloud.com/cdn/4.0/domains", nil)
 
 		responseData, _ := ioutil.ReadAll(res.Body)
 
@@ -100,7 +100,7 @@ var info = &cobra.Command{
 	Short: "get a domain info",
 	Long:  descriptions["info"],
 	Run: func(cmd *cobra.Command, args []string) {
-		res, _:= http.Get("https://napi.arvancloud.com/cdn/4.0/domains/"+infoDomainName, nil)
+		res, _ := http.Get("https://napi.arvancloud.com/cdn/4.0/domains/"+infoDomainName, nil)
 
 		responseData, _ := ioutil.ReadAll(res.Body)
 
