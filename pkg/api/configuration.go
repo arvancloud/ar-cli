@@ -5,6 +5,7 @@
 package api
 
 import (
+	"github.com/masihyeganeh/ar-cli/pkg/config"
 	"net/http"
 )
 
@@ -56,7 +57,7 @@ type Configuration struct {
 func NewConfiguration() *Configuration {
 	cfg := &Configuration{
 		BasePath:      "https://napi.arvancloud.com/cdn/4.0",
-		DefaultHeader: make(map[string]string),
+		DefaultHeader: map[string]string{"Authorization": config.GetConfigInfo().GetApiKey()},
 		UserAgent:     "ar-cli/0.0.1",
 	}
 	return cfg
