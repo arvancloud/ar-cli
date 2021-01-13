@@ -10,18 +10,27 @@ import (
 )
 
 type SearchResponse struct {
-	Data []struct{
-		Name string `json:"name"`
-		Domain string `json:"domain"`
-		Status string `json:"status"`
-	}
+	Data []Domain
 }
+
+type InfoResponse struct {
+	Data Domain
+}
+
+type Domain struct {
+	Name string `json:"name"`
+	Domain string `json:"domain"`
+	Status string `json:"status"`
+}
+
+var infoDomainName string
 
 var descriptions = map[string]string{
 	"command": "Create, Search, Delete, Get, Health check and get Ns records ",
 	"search":  "Leaving the 'search' flag is empty, will return all domains. Otherwise, it will filter domains containing the search keyword.",
 	"create":  "Create new domain",
 	"info":    "Get information of the domain",
+	"info-domain-name": "The host name you want to see the details. ex: example.com",
 	"remove":  "Remove the domain",
 	"list":    "Get list of domain's root NS records and expected values",
 	"check":   "Check NS to find whether domain is activated",
@@ -62,13 +71,15 @@ var search = &cobra.Command{
 
 		responseData, _ := ioutil.ReadAll(res.Body)
 
-		var searchResult = new(SearchResponse)
-		_ = json.Unmarshal(responseData, &searchResult)
+		var domainInfo = new(SearchResponse)
+		_ = json.Unmarshal(responseData, &domainInfo)
 
 		table := tablewriter.NewWriter(os.Stdout)
 		table.SetHeader([]string{"Name", "Domain", "Status"})
 
-		for _, foundDomain := range searchResult.Data {
+		println()
+
+		for _, foundDomain := range domainInfo.Data {
 			record := []string{
 				foundDomain.Name,
 				foundDomain.Domain,
@@ -89,7 +100,27 @@ var info = &cobra.Command{
 	Short: "get a domain info",
 	Long:  descriptions["info"],
 	Run: func(cmd *cobra.Command, args []string) {
-		// TODO: Implement logic
+		res, _:= http.Get("https://napi.arvancloud.com/cdn/4.0/domains/"+infoDomainName, nil)
+
+		responseData, _ := ioutil.ReadAll(res.Body)
+
+		var domainInfo = new(InfoResponse)
+		_ = json.Unmarshal(responseData, &domainInfo)
+
+		table := tablewriter.NewWriter(os.Stdout)
+		table.SetHeader([]string{"Name", "Domain", "Status"})
+
+		record := []string{
+			domainInfo.Data.Name,
+			domainInfo.Data.Domain,
+			domainInfo.Data.Status,
+		}
+
+		table.Append(record)
+
+		table.SetRowLine(true)
+		table.SetRowSeparator("~")
+		table.Render()
 	},
 }
 
@@ -129,4 +160,7 @@ func init() {
 	domainCmd.AddCommand(list)
 	domainCmd.AddCommand(check)
 	domainCmd.AddCommand(remove)
+
+	info.Flags().StringVarP(&infoDomainName, "domain-name", "d", "", descriptions["info-domain-name"])
+
 }
