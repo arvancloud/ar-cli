@@ -19,6 +19,13 @@ type InfoResponse struct {
 	Data []DomainData
 }
 
+type ListNSRecordResponse struct {
+	Data struct{
+		NSDomain []string `json:"ns_domain"`
+		NSKeys []string `json:"ns_keys"`
+	}
+}
+
 type DomainData struct {
 	UUID	  string 			`json:"id"`
 	Name      string            `json:"name"`
@@ -40,7 +47,7 @@ var descriptions = map[string]string{
 	"domain-name": "The host name. like: example.com",
 	"domain-id":   "The domain UUID. like: 3541b0ce-e8a6-42f0-b65a-f03a7c387486",
 	"remove":      "Remove the domain",
-	"list":        "Get list of domain's root NS records and expected values",
+	"list-ns-records":  "Get list of domain's root NS records and expected values",
 	"check":       "Check NS to find whether domain is activated",
 }
 
@@ -82,8 +89,7 @@ var search = &cobra.Command{
 		var domainInfo = new(SearchResponse)
 		_ = json.Unmarshal(responseData, &domainInfo)
 
-		table := tablewriter.NewWriter(os.Stdout)
-		table.SetHeader([]string{"Id", "Name", "Domain", "DNS Status", "Domain Status", "NS Key #1", "NS Key #2"})
+		table := newTable([]string{"Id", "Name", "Domain", "DNS Status", "Domain Status", "NS Key #1", "NS Key #2"})
 
 		for _, foundDomain := range domainInfo.Data {
 			record := []string{
@@ -98,8 +104,6 @@ var search = &cobra.Command{
 			table.Append(record)
 		}
 
-		table.SetRowLine(true)
-		table.SetRowSeparator("~")
 		table.Render()
 
 	},
@@ -117,8 +121,7 @@ var info = &cobra.Command{
 		var domainInfo = new(InfoResponse)
 		_ = json.Unmarshal(responseData, &domainInfo)
 
-		table := tablewriter.NewWriter(os.Stdout)
-		table.SetHeader([]string{"Id", "Name", "Domain", "DNS Status", "Domain Status", "NS Key #1", "NS Key #2"})
+		table := newTable([]string{"Id", "Name", "Domain", "DNS Status", "Domain Status", "NS Key #1", "NS Key #2"})
 
 		record := []string{
 			domainInfo.Data[0].UUID,
@@ -132,8 +135,6 @@ var info = &cobra.Command{
 
 		table.Append(record)
 
-		table.SetRowLine(true)
-		table.SetRowSeparator("~")
 		table.Render()
 	},
 }
@@ -157,12 +158,44 @@ var remove = &cobra.Command{
 	},
 }
 
-var list = &cobra.Command{
-	Use:   "list",
+var nsRecords = &cobra.Command{
+	Use:   "ns-records",
 	Short: "get list of all NS records",
-	Long:  descriptions["list"],
+	Long:  descriptions["list-ns-records"],
 	Run: func(cmd *cobra.Command, args []string) {
-		// TODO: Implement list
+		//TODO read from config file
+		response , err := http.Get("https://napi.arvancloud.com/cdn/4.0/domains/"+DomainName+"/dns-service/ns-keys", nil)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		responseData, _ := ioutil.ReadAll(response.Body)
+
+		var nsRecordList = new(ListNSRecordResponse)
+		_ = json.Unmarshal(responseData, &nsRecordList)
+
+		nsKeysTable := newTable([]string{"NS Keys"})
+		nsDomainTable := newTable([]string{"NS Domain"})
+
+		for _, nsKey := range nsRecordList.Data.NSKeys{
+			record := []string{
+				nsKey,
+			}
+			nsKeysTable.Append(record)
+		}
+
+		for _, nsDomain := range nsRecordList.Data.NSDomain {
+			record := []string{
+				nsDomain,
+			}
+			nsDomainTable.Append(record)
+		}
+
+		nsDomainTable.Render()
+		
+		nsKeysTable.Render()
+
 	},
 }
 
@@ -175,18 +208,30 @@ var check = &cobra.Command{
 	},
 }
 
+func newTable(tableHeaders []string, ) *tablewriter.Table {
+	table := tablewriter.NewWriter(os.Stdout)
+
+	table.SetHeader(tableHeaders)
+	table.SetRowLine(true)
+	table.SetRowSeparator("~")
+
+	return table
+}
+
 func init() {
 	rootCmd.AddCommand(domainCmd)
 
 	domainCmd.AddCommand(search)
 	domainCmd.AddCommand(create)
 	domainCmd.AddCommand(info)
-	domainCmd.AddCommand(list)
+	domainCmd.AddCommand(nsRecords)
 	domainCmd.AddCommand(check)
 	domainCmd.AddCommand(remove)
 
-	info.Flags().StringVarP(&DomainName, "domain-name", "d", "", descriptions["domain-name"])
+	info.Flags().StringVarP(&DomainName, "name", "n", "", descriptions["domain-name"])
 
-	remove.Flags().StringVarP(&DomainName, "name", "d", "", descriptions["domain-name"])
+	remove.Flags().StringVarP(&DomainName, "name", "n", "", descriptions["domain-name"])
 	remove.Flags().StringVarP(&DomainId, "id", "i", "", descriptions["domain-id"])
+
+	nsRecords.Flags().StringVarP(&DomainName, "name", "n", "", descriptions["domain-name"])
 }
