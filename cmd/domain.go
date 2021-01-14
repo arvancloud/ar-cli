@@ -20,21 +20,21 @@ type InfoResponse struct {
 }
 
 type ListNSRecordResponse struct {
-	Data struct{
+	Data struct {
 		NSDomain []string `json:"ns_domain"`
-		NSKeys []string `json:"ns_keys"`
+		NSKeys   []string `json:"ns_keys"`
 	}
 }
 
 type CheckNSResponse struct {
 	Message string `json:"message"`
-	Data struct{
+	Data    struct {
 		Status bool `json:"ns_status"`
 	}
 }
 
 type DomainData struct {
-	UUID	  string 			`json:"id"`
+	UUID      string            `json:"id"`
 	Name      string            `json:"name"`
 	Domain    string            `json:"domain"`
 	Services  map[string]string `json:"services"`
@@ -47,15 +47,15 @@ var DomainName string
 var DomainId string
 
 var descriptions = map[string]string{
-	"command":     "Create, Search, Delete, Get, Health check and get Ns records ",
-	"search":      "Leaving the 'search' flag is empty, will return all domains. Otherwise, it will filter domains containing the search keyword.",
-	"create":      "Create new domain",
-	"info":        "Get information of the domain",
-	"domain-name": "The host name. like: example.com",
-	"domain-id":   "The domain UUID. like: 3541b0ce-e8a6-42f0-b65a-f03a7c387486",
-	"remove":      "Remove the domain",
-	"list-ns-records":  "Get list of domain's root NS records and expected values",
-	"check":       "Check NS to find whether domain is activated",
+	"command":         "Create, Search, Delete, Get, Health check and get Ns records ",
+	"search":          "Leaving the 'search' flag is empty, will return all domains. Otherwise, it will filter domains containing the search keyword.",
+	"create":          "Create new domain",
+	"info":            "Get information of the domain",
+	"domain-name":     "The host name. like: example.com",
+	"domain-id":       "The domain UUID. like: 3541b0ce-e8a6-42f0-b65a-f03a7c387486",
+	"remove":          "Remove the domain",
+	"list-ns-records": "Get list of domain's root NS records and expected values",
+	"check":           "Check NS to find whether domain is activated",
 }
 
 var domainCmd = &cobra.Command{
@@ -171,7 +171,7 @@ var nsRecords = &cobra.Command{
 	Long:  descriptions["list-ns-records"],
 	Run: func(cmd *cobra.Command, args []string) {
 		//TODO read from config file
-		response , err := http.Get("https://napi.arvancloud.com/cdn/4.0/domains/"+DomainName+"/dns-service/ns-keys", nil)
+		response, err := http.Get("https://napi.arvancloud.com/cdn/4.0/domains/"+DomainName+"/dns-service/ns-keys", nil)
 
 		if err != nil {
 			log.Fatal(err)
@@ -185,7 +185,7 @@ var nsRecords = &cobra.Command{
 		nsKeysTable := newTable([]string{"NS Keys"})
 		nsDomainTable := newTable([]string{"NS Domain"})
 
-		for _, nsKey := range nsRecordList.Data.NSKeys{
+		for _, nsKey := range nsRecordList.Data.NSKeys {
 			record := []string{
 				nsKey,
 			}
@@ -211,7 +211,7 @@ var check = &cobra.Command{
 	Short: "ensure domain is active",
 	Long:  descriptions["check"],
 	Run: func(cmd *cobra.Command, args []string) {
-		response , err := http.Put("https://napi.arvancloud.com/cdn/4.0/domains/"+DomainName+"/dns-service/check-ns", nil)
+		response, err := http.Put("https://napi.arvancloud.com/cdn/4.0/domains/"+DomainName+"/dns-service/check-ns", nil)
 
 		if err != nil {
 			log.Fatal(err)
@@ -224,7 +224,7 @@ var check = &cobra.Command{
 
 		if nsStatus.Data.Status {
 			fmt.Println("NS domain is activated")
-		}else {
+		} else {
 			fmt.Println("NS domain is NOT activated")
 		}
 
@@ -232,7 +232,7 @@ var check = &cobra.Command{
 	},
 }
 
-func newTable(tableHeaders []string, ) *tablewriter.Table {
+func newTable(tableHeaders []string) *tablewriter.Table {
 	table := tablewriter.NewWriter(os.Stdout)
 
 	table.SetHeader(tableHeaders)
