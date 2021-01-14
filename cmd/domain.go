@@ -14,7 +14,7 @@ type SearchResponse struct {
 }
 
 type InfoResponse struct {
-	Data Domain
+	Data []Domain
 }
 
 type Domain struct {
@@ -23,14 +23,14 @@ type Domain struct {
 	Status string `json:"status"`
 }
 
-var infoDomainName string
+var DomainName string
 
 var descriptions = map[string]string{
 	"command":          "Create, Search, Delete, Get, Health check and get Ns records ",
 	"search":           "Leaving the 'search' flag is empty, will return all domains. Otherwise, it will filter domains containing the search keyword.",
 	"create":           "Create new domain",
 	"info":             "Get information of the domain",
-	"info-domain-name": "The host name you want to see the details. ex: example.com",
+	"domain-name": 		"The host name. ex: example.com",
 	"remove":           "Remove the domain",
 	"list":             "Get list of domain's root NS records and expected values",
 	"check":            "Check NS to find whether domain is activated",
@@ -77,8 +77,6 @@ var search = &cobra.Command{
 		table := tablewriter.NewWriter(os.Stdout)
 		table.SetHeader([]string{"Name", "Domain", "Status"})
 
-		println()
-
 		for _, foundDomain := range domainInfo.Data {
 			record := []string{
 				foundDomain.Name,
@@ -100,7 +98,7 @@ var info = &cobra.Command{
 	Short: "get a domain info",
 	Long:  descriptions["info"],
 	Run: func(cmd *cobra.Command, args []string) {
-		res, _ := http.Get("https://napi.arvancloud.com/cdn/4.0/domains/"+infoDomainName, nil)
+		res, _ := http.Get("https://napi.arvancloud.com/cdn/4.0/domains/"+DomainName, nil)
 
 		responseData, _ := ioutil.ReadAll(res.Body)
 
@@ -111,9 +109,9 @@ var info = &cobra.Command{
 		table.SetHeader([]string{"Name", "Domain", "Status"})
 
 		record := []string{
-			domainInfo.Data.Name,
-			domainInfo.Data.Domain,
-			domainInfo.Data.Status,
+			domainInfo.Data[0].Name,
+			domainInfo.Data[0].Domain,
+			domainInfo.Data[0].Status,
 		}
 
 		table.Append(record)
@@ -161,6 +159,6 @@ func init() {
 	domainCmd.AddCommand(check)
 	domainCmd.AddCommand(remove)
 
-	info.Flags().StringVarP(&infoDomainName, "domain-name", "d", "", descriptions["info-domain-name"])
+	info.Flags().StringVarP(&DomainName, "domain-name", "d", "", descriptions["domain-name"])
 
 }
