@@ -3,6 +3,7 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/ebrahimahmadi/ar-cli/pkg/config"
 	"github.com/ebrahimahmadi/ar-cli/pkg/http"
 	"github.com/olekukonko/tablewriter"
 	"github.com/spf13/cobra"
@@ -45,6 +46,7 @@ type DomainData struct {
 
 var DomainName string
 var DomainId string
+var BaseUrl = config.GetConfigInfo().GetUrl()
 
 var descriptions = map[string]string{
 	"command":         "Create, Search, Delete, Get, Health check and get Ns records ",
@@ -77,8 +79,7 @@ var create = &cobra.Command{
 			"domain": args[0],
 		}
 
-		// todo: READ FROM CONFIG FILE
-		http.Post("https://napi.arvancloud.com/cdn/4.0/domains/dns-service", payload)
+		http.Post(BaseUrl+"domains/dns-service", payload)
 	},
 }
 
@@ -87,9 +88,8 @@ var search = &cobra.Command{
 	Short: "search domains",
 	Long:  descriptions["search"],
 	Run: func(cmd *cobra.Command, args []string) {
-		// todo: READ FROM CONFIG FILE
 		// todo: Add search parameter
-		res, _ := http.Get("https://napi.arvancloud.com/cdn/4.0/domains", nil)
+		res, _ := http.Get(BaseUrl+"domains", nil)
 
 		responseData, _ := ioutil.ReadAll(res.Body)
 
@@ -121,7 +121,7 @@ var info = &cobra.Command{
 	Short: "get a domain info",
 	Long:  descriptions["info"],
 	Run: func(cmd *cobra.Command, args []string) {
-		res, _ := http.Get("https://napi.arvancloud.com/cdn/4.0/domains/"+DomainName, nil)
+		res, _ := http.Get(BaseUrl+"/domains/"+DomainName, nil)
 
 		responseData, _ := ioutil.ReadAll(res.Body)
 
@@ -155,11 +155,13 @@ var remove = &cobra.Command{
 			"id": DomainId,
 		}
 
-		_, err := http.Delete("https://napi.arvancloud.com/cdn/4.0/domains/"+DomainName, nil, idAsUrlQuery)
+		res, err := http.Delete(BaseUrl+"/domains/"+DomainName, nil, idAsUrlQuery)
 
 		if err != nil {
 			log.Fatal(err)
 		}
+
+		res.Body.Close()
 
 		fmt.Println("Removed Successfully")
 	},
@@ -170,8 +172,7 @@ var nsRecords = &cobra.Command{
 	Short: "get list of all NS records",
 	Long:  descriptions["list-ns-records"],
 	Run: func(cmd *cobra.Command, args []string) {
-		//TODO read from config file
-		response, err := http.Get("https://napi.arvancloud.com/cdn/4.0/domains/"+DomainName+"/dns-service/ns-keys", nil)
+		response, err := http.Get(BaseUrl+"/domains/"+DomainName+"/dns-service/ns-keys", nil)
 
 		if err != nil {
 			log.Fatal(err)
@@ -211,7 +212,7 @@ var check = &cobra.Command{
 	Short: "ensure domain is active",
 	Long:  descriptions["check"],
 	Run: func(cmd *cobra.Command, args []string) {
-		response, err := http.Put("https://napi.arvancloud.com/cdn/4.0/domains/"+DomainName+"/dns-service/check-ns", nil)
+		response, err := http.Put(BaseUrl+"/domains/"+DomainName+"/dns-service/check-ns", nil)
 
 		if err != nil {
 			log.Fatal(err)
@@ -253,11 +254,8 @@ func init() {
 	domainCmd.AddCommand(remove)
 
 	info.Flags().StringVarP(&DomainName, "name", "n", "", descriptions["domain-name"])
-
 	remove.Flags().StringVarP(&DomainName, "name", "n", "", descriptions["domain-name"])
 	remove.Flags().StringVarP(&DomainId, "id", "i", "", descriptions["domain-id"])
-
 	nsRecords.Flags().StringVarP(&DomainName, "name", "n", "", descriptions["domain-name"])
-
 	check.Flags().StringVarP(&DomainName, "name", "n", "", descriptions["domain-name"])
 }
