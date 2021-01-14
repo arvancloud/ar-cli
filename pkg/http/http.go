@@ -4,12 +4,12 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"github.com/ebrahimahmadi/ar-cli/pkg/config"
 	"log"
 	"net/http"
 )
 
-var ApiKey = "Apikey 9181cf76-7880-4834-b333-0dba8c4915c9" // todo: read from config file
-var ContentType = "application/json"
+var Config = config.GetConfigInfo()
 
 func Get(url string, queries map[string]string) (*http.Response, error) {
 	req := newRequest("GET", url, nil)
@@ -103,8 +103,8 @@ func handleResponse(response *http.Response) (*http.Response, error) {
 }
 
 func do(req *http.Request) (*http.Response, error) {
-	req.Header.Set("content-type", ContentType)
-	req.Header.Set("Authorization", ApiKey)
+	req.Header.Set("content-type", "application/json")
+	req.Header.Set("Authorization", Config.GetApiKey())
 
 	res, err := http.DefaultClient.Do(req)
 
