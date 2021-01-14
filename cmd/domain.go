@@ -16,7 +16,7 @@ type SearchResponse struct {
 }
 
 type InfoResponse struct {
-	Data []DomainData
+	Data DomainData
 }
 
 type ListNSRecordResponse struct {
@@ -131,13 +131,13 @@ var info = &cobra.Command{
 		table := newTable([]string{"Id", "Name", "Domain", "DNS Status", "Domain Status", "NS Key #1", "NS Key #2"})
 
 		record := []string{
-			domainInfo.Data[0].UUID,
-			domainInfo.Data[0].Name,
-			domainInfo.Data[0].Domain,
-			domainInfo.Data[0].Services["dns"],
-			domainInfo.Data[0].Status,
-			domainInfo.Data[0].NSKeys[0],
-			domainInfo.Data[0].NSKeys[1],
+			domainInfo.Data.UUID,
+			domainInfo.Data.Name,
+			domainInfo.Data.Domain,
+			domainInfo.Data.Services["dns"],
+			domainInfo.Data.Status,
+			domainInfo.Data.NSKeys[0],
+			domainInfo.Data.NSKeys[1],
 		}
 
 		table.Append(record)
