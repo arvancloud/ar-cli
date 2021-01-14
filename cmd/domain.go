@@ -18,25 +18,25 @@ type InfoResponse struct {
 }
 
 type DomainData struct {
-	Name   string `json:"name"`
-	Domain string `json:"domain"`
-	Services map[string]string `json:"services"`
-	Status string `json:"status"`
-	NSKeys []string `json:"ns_keys"`
-	CurrentNS []string `json:"current_ns"`
+	Name      string            `json:"name"`
+	Domain    string            `json:"domain"`
+	Services  map[string]string `json:"services"`
+	Status    string            `json:"status"`
+	NSKeys    []string          `json:"ns_keys"`
+	CurrentNS []string          `json:"current_ns"`
 }
 
 var DomainName string
 
 var descriptions = map[string]string{
-	"command":          "Create, Search, Delete, Get, Health check and get Ns records ",
-	"search":           "Leaving the 'search' flag is empty, will return all domains. Otherwise, it will filter domains containing the search keyword.",
-	"create":           "Create new domain",
-	"info":             "Get information of the domain",
-	"domain-name": 		"The host name. ex: example.com",
-	"remove":           "Remove the domain",
-	"list":             "Get list of domain's root NS records and expected values",
-	"check":            "Check NS to find whether domain is activated",
+	"command":     "Create, Search, Delete, Get, Health check and get Ns records ",
+	"search":      "Leaving the 'search' flag is empty, will return all domains. Otherwise, it will filter domains containing the search keyword.",
+	"create":      "Create new domain",
+	"info":        "Get information of the domain",
+	"domain-name": "The host name. ex: example.com",
+	"remove":      "Remove the domain",
+	"list":        "Get list of domain's root NS records and expected values",
+	"check":       "Check NS to find whether domain is activated",
 }
 
 var domainCmd = &cobra.Command{
