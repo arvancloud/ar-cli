@@ -59,6 +59,20 @@ func Post(url string, payload map[string]string) (*http.Response, error) {
 	}
 }
 
+
+func Put(url string, payload map[string]string) (*http.Response, error) {
+	req := newRequest("PUT", url, payload)
+
+	response, responseErr := do(req)
+
+	if responseErr != nil {
+		return nil, responseErr
+	} else {
+		return handleResponse(response)
+	}
+}
+
+
 func addQueryToUrl(request http.Request, key string, value string) {
 	query := request.URL.Query()
 
