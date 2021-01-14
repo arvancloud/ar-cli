@@ -26,6 +26,13 @@ type ListNSRecordResponse struct {
 	}
 }
 
+type CheckNSResponse struct {
+	Message string `json:"message"`
+	Data struct{
+		Status bool `json:"ns_status"`
+	}
+}
+
 type DomainData struct {
 	UUID	  string 			`json:"id"`
 	Name      string            `json:"name"`
@@ -193,7 +200,7 @@ var nsRecords = &cobra.Command{
 		}
 
 		nsDomainTable.Render()
-		
+
 		nsKeysTable.Render()
 
 	},
@@ -204,7 +211,24 @@ var check = &cobra.Command{
 	Short: "ensure domain is active",
 	Long:  descriptions["check"],
 	Run: func(cmd *cobra.Command, args []string) {
-		// TODO: Implement logic
+		response , err := http.Put("https://napi.arvancloud.com/cdn/4.0/domains/"+DomainName+"/dns-service/check-ns", nil)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		responseData, _ := ioutil.ReadAll(response.Body)
+
+		var nsStatus = new(CheckNSResponse)
+		_ = json.Unmarshal(responseData, &nsStatus)
+
+		if nsStatus.Data.Status {
+			fmt.Println("NS domain is activated")
+		}else {
+			fmt.Println("NS domain is NOT activated")
+		}
+
+		fmt.Println(nsStatus.Message)
 	},
 }
 
@@ -234,4 +258,6 @@ func init() {
 	remove.Flags().StringVarP(&DomainId, "id", "i", "", descriptions["domain-id"])
 
 	nsRecords.Flags().StringVarP(&DomainName, "name", "n", "", descriptions["domain-name"])
+
+	check.Flags().StringVarP(&DomainName, "name", "n", "", descriptions["domain-name"])
 }
