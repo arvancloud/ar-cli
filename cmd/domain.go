@@ -10,17 +10,20 @@ import (
 )
 
 type SearchResponse struct {
-	Data []Domain
+	Data []DomainData
 }
 
 type InfoResponse struct {
-	Data []Domain
+	Data []DomainData
 }
 
-type Domain struct {
+type DomainData struct {
 	Name   string `json:"name"`
 	Domain string `json:"domain"`
+	Services map[string]string `json:"services"`
 	Status string `json:"status"`
+	NSKeys []string `json:"ns_keys"`
+	CurrentNS []string `json:"current_ns"`
 }
 
 var DomainName string
@@ -75,13 +78,16 @@ var search = &cobra.Command{
 		_ = json.Unmarshal(responseData, &domainInfo)
 
 		table := tablewriter.NewWriter(os.Stdout)
-		table.SetHeader([]string{"Name", "Domain", "Status"})
+		table.SetHeader([]string{"Name", "Domain", "DNS Status", "Domain Status", "NS Key #1", "NS Key #2"})
 
 		for _, foundDomain := range domainInfo.Data {
 			record := []string{
 				foundDomain.Name,
 				foundDomain.Domain,
+				foundDomain.Services["dns"],
 				foundDomain.Status,
+				domainInfo.Data[0].NSKeys[0],
+				domainInfo.Data[0].NSKeys[1],
 			}
 			table.Append(record)
 		}
@@ -106,12 +112,15 @@ var info = &cobra.Command{
 		_ = json.Unmarshal(responseData, &domainInfo)
 
 		table := tablewriter.NewWriter(os.Stdout)
-		table.SetHeader([]string{"Name", "Domain", "Status"})
+		table.SetHeader([]string{"Name", "Domain", "DNS Status", "Domain Status", "NS Key #1", "NS Key #2"})
 
 		record := []string{
 			domainInfo.Data[0].Name,
 			domainInfo.Data[0].Domain,
+			domainInfo.Data[0].Services["dns"],
 			domainInfo.Data[0].Status,
+			domainInfo.Data[0].NSKeys[0],
+			domainInfo.Data[0].NSKeys[1],
 		}
 
 		table.Append(record)
