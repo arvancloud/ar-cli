@@ -2,10 +2,12 @@ package cmd
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/ebrahimahmadi/ar-cli/pkg/http"
 	"github.com/olekukonko/tablewriter"
 	"github.com/spf13/cobra"
 	"io/ioutil"
+	"log"
 	"os"
 )
 
@@ -18,6 +20,7 @@ type InfoResponse struct {
 }
 
 type DomainData struct {
+	UUID	  string 			`json:"id"`
 	Name      string            `json:"name"`
 	Domain    string            `json:"domain"`
 	Services  map[string]string `json:"services"`
@@ -27,13 +30,15 @@ type DomainData struct {
 }
 
 var DomainName string
+var DomainId string
 
 var descriptions = map[string]string{
 	"command":     "Create, Search, Delete, Get, Health check and get Ns records ",
 	"search":      "Leaving the 'search' flag is empty, will return all domains. Otherwise, it will filter domains containing the search keyword.",
 	"create":      "Create new domain",
 	"info":        "Get information of the domain",
-	"domain-name": "The host name. ex: example.com",
+	"domain-name": "The host name. like: example.com",
+	"domain-id":   "The domain UUID. like: 3541b0ce-e8a6-42f0-b65a-f03a7c387486",
 	"remove":      "Remove the domain",
 	"list":        "Get list of domain's root NS records and expected values",
 	"check":       "Check NS to find whether domain is activated",
@@ -78,16 +83,17 @@ var search = &cobra.Command{
 		_ = json.Unmarshal(responseData, &domainInfo)
 
 		table := tablewriter.NewWriter(os.Stdout)
-		table.SetHeader([]string{"Name", "Domain", "DNS Status", "Domain Status", "NS Key #1", "NS Key #2"})
+		table.SetHeader([]string{"Id", "Name", "Domain", "DNS Status", "Domain Status", "NS Key #1", "NS Key #2"})
 
 		for _, foundDomain := range domainInfo.Data {
 			record := []string{
+				foundDomain.UUID,
 				foundDomain.Name,
 				foundDomain.Domain,
 				foundDomain.Services["dns"],
 				foundDomain.Status,
-				domainInfo.Data[0].NSKeys[0],
-				domainInfo.Data[0].NSKeys[1],
+				foundDomain.NSKeys[0],
+				foundDomain.NSKeys[1],
 			}
 			table.Append(record)
 		}
@@ -112,9 +118,10 @@ var info = &cobra.Command{
 		_ = json.Unmarshal(responseData, &domainInfo)
 
 		table := tablewriter.NewWriter(os.Stdout)
-		table.SetHeader([]string{"Name", "Domain", "DNS Status", "Domain Status", "NS Key #1", "NS Key #2"})
+		table.SetHeader([]string{"Id", "Name", "Domain", "DNS Status", "Domain Status", "NS Key #1", "NS Key #2"})
 
 		record := []string{
+			domainInfo.Data[0].UUID,
 			domainInfo.Data[0].Name,
 			domainInfo.Data[0].Domain,
 			domainInfo.Data[0].Services["dns"],
@@ -136,7 +143,17 @@ var remove = &cobra.Command{
 	Short: "remove a domain",
 	Long:  descriptions["remove"],
 	Run: func(cmd *cobra.Command, args []string) {
-		// TODO: Implement logic
+		idAsUrlQuery := map[string]string{
+			"id": DomainId,
+		}
+
+		_, err := http.Delete("https://napi.arvancloud.com/cdn/4.0/domains/"+DomainName, nil, idAsUrlQuery)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		fmt.Println("Removed Successfully")
 	},
 }
 
@@ -170,4 +187,6 @@ func init() {
 
 	info.Flags().StringVarP(&DomainName, "domain-name", "d", "", descriptions["domain-name"])
 
+	remove.Flags().StringVarP(&DomainName, "name", "d", "", descriptions["domain-name"])
+	remove.Flags().StringVarP(&DomainId, "id", "i", "", descriptions["domain-id"])
 }
