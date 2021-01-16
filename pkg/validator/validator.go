@@ -3,7 +3,22 @@ package validator
 import (
 	"errors"
 	"regexp"
+	"sort"
+	"strings"
 )
+
+func HasString(searchTerm string, keys []string) (bool, error) {
+	sort.Strings(keys)
+	i := sort.SearchStrings(keys, searchTerm)
+
+	ok := i < len(searchTerm) && keys[i] == searchTerm
+
+	if ok {
+		return true, nil
+	}
+
+	return  false, errors.New(searchTerm + " Is Illegal. Value should be one of " + strings.Join(keys,", "))
+}
 
 func IsApiKey(apiKey string) (bool, error) {
 	var validApiKey = regexp.MustCompile(`^Apikey [a-z0-9\-]+$$`)
