@@ -83,6 +83,7 @@ func addQueryToUrl(request http.Request, key string, value string) {
 
 func newRequest(method string, url string, payload map[string]string) *http.Request {
 	postBody, _ := json.Marshal(payload)
+
 	req, err := http.NewRequest(method, url, bytes.NewBuffer(postBody))
 
 	if err != nil {
