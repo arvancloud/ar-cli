@@ -3,12 +3,14 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/ebrahimahmadi/ar-cli/pkg/api"
 	"github.com/ebrahimahmadi/ar-cli/pkg/config"
-	"github.com/ebrahimahmadi/ar-cli/pkg/http"
+	"github.com/ebrahimahmadi/ar-cli/pkg/helpers"
+	"github.com/ebrahimahmadi/ar-cli/pkg/validator"
 	"github.com/olekukonko/tablewriter"
 	"github.com/spf13/cobra"
 	"io/ioutil"
-	"log"
+	"net/http"
 	"os"
 )
 
@@ -46,11 +48,13 @@ type DomainData struct {
 
 var DomainName string
 var DomainId string
-var BaseUrl = config.GetConfigInfo().GetUrl()
+var searchKeyWord string
+var Config = config.GetConfigInfo()
 
 var descriptions = map[string]string{
 	"command":         "Create, Search, Delete, Get, Health check and get Ns records ",
-	"search":          "Leaving the 'search' flag is empty, will return all domains. Otherwise, it will filter domains containing the search keyword.",
+	"search":          "Leaving the 'search' flag empty, will return all domains. Otherwise, it will filter domains containing the search keyword.",
+	"search-key-word": "Search Item",
 	"create":          "Create new domain",
 	"info":            "Get information of the domain",
 	"domain-name":     "The host name. like: example.com",
@@ -74,12 +78,33 @@ var create = &cobra.Command{
 	Short: "create a domain",
 	Long:  descriptions["create"],
 	Run: func(cmd *cobra.Command, args []string) {
-		// todo: implement validation
-		payload := map[string]string{
-			"domain": args[0],
+		_, validationErr := validator.IsDomain(DomainName)
+
+		if validationErr != nil {
+			err := helpers.ToBeColored{Expression: validationErr.Error()}
+			err.StdoutError().StopExecution()
 		}
 
-		http.Post(BaseUrl+"domains/dns-service", payload)
+		request := api.RequestBag{
+			BodyPayload: map[string]string{"domain": DomainName},
+			URL:         Config.GetUrl() + "/domains/dns-service",
+			Method:      "POST",
+		}
+
+		res, err := request.Do()
+
+		if err != nil {
+			err := helpers.ToBeColored{Expression: err.Error()}
+			err.StdoutError().StopExecution()
+		}
+
+		defer res.Body.Close()
+
+		api.HandleResponseErr(res)
+
+		if res.StatusCode == http.StatusCreated {
+			fmt.Println(DomainName + " Created Successfully")
+		}
 	},
 }
 
@@ -88,8 +113,20 @@ var search = &cobra.Command{
 	Short: "search domains",
 	Long:  descriptions["search"],
 	Run: func(cmd *cobra.Command, args []string) {
-		// todo: Add search parameter
-		res, _ := http.Get(BaseUrl+"domains", nil)
+		request := api.RequestBag{
+			URL:        Config.GetUrl() + "/domains",
+			Method:     "GET",
+			URLQueries: map[string]string{"search": searchKeyWord},
+		}
+
+		res, err := request.Do()
+
+		if err != nil {
+			err := helpers.ToBeColored{Expression: err.Error()}
+			err.StdoutError().StopExecution()
+		}
+
+		defer res.Body.Close()
 
 		responseData, _ := ioutil.ReadAll(res.Body)
 
@@ -121,7 +158,26 @@ var info = &cobra.Command{
 	Short: "get a domain info",
 	Long:  descriptions["info"],
 	Run: func(cmd *cobra.Command, args []string) {
-		res, _ := http.Get(BaseUrl+"/domains/"+DomainName, nil)
+		_, validationErr := validator.IsDomain(DomainName)
+
+		if validationErr != nil {
+			err := helpers.ToBeColored{Expression: validationErr.Error()}
+			err.StdoutError().StopExecution()
+		}
+
+		request := api.RequestBag{
+			URL:    Config.GetUrl() + "/domains/" + DomainName,
+			Method: "GET",
+		}
+
+		res, err := request.Do()
+
+		if err != nil {
+			err := helpers.ToBeColored{Expression: err.Error()}
+			err.StdoutError().StopExecution()
+		}
+
+		defer res.Body.Close()
 
 		responseData, _ := ioutil.ReadAll(res.Body)
 
@@ -151,17 +207,29 @@ var remove = &cobra.Command{
 	Short: "remove a domain",
 	Long:  descriptions["remove"],
 	Run: func(cmd *cobra.Command, args []string) {
-		idAsUrlQuery := map[string]string{
-			"id": DomainId,
+		_, validationErr := validator.IsDomain(DomainName)
+
+		if validationErr != nil {
+			err := helpers.ToBeColored{Expression: validationErr.Error()}
+			err.StdoutError().StopExecution()
 		}
 
-		res, err := http.Delete(BaseUrl+"/domains/"+DomainName, nil, idAsUrlQuery)
+		request := api.RequestBag{
+			BodyPayload: map[string]string{"id": DomainId},
+			URL:         Config.GetUrl() + "/domains/" + DomainName,
+			Method:      "DELETE",
+		}
+
+		res, err := request.Do()
 
 		if err != nil {
-			log.Fatal(err)
+			err := helpers.ToBeColored{Expression: err.Error()}
+			err.StdoutError().StopExecution()
 		}
 
-		res.Body.Close()
+		defer res.Body.Close()
+
+		api.HandleResponseErr(res)
 
 		fmt.Println("Removed Successfully")
 	},
@@ -172,13 +240,30 @@ var nsRecords = &cobra.Command{
 	Short: "get list of all NS records",
 	Long:  descriptions["list-ns-records"],
 	Run: func(cmd *cobra.Command, args []string) {
-		response, err := http.Get(BaseUrl+"/domains/"+DomainName+"/dns-service/ns-keys", nil)
+		_, validationErr := validator.IsDomain(DomainName)
 
-		if err != nil {
-			log.Fatal(err)
+		if validationErr != nil {
+			err := helpers.ToBeColored{Expression: validationErr.Error()}
+			err.StdoutError().StopExecution()
 		}
 
-		responseData, _ := ioutil.ReadAll(response.Body)
+		request := api.RequestBag{
+			URL:    Config.GetUrl() + "/domains/" + DomainName + "/dns-service/ns-keys",
+			Method: "GET",
+		}
+
+		res, err := request.Do()
+
+		if err != nil {
+			err := helpers.ToBeColored{Expression: err.Error()}
+			err.StdoutError().StopExecution()
+		}
+
+		defer res.Body.Close()
+
+		api.HandleResponseErr(res)
+
+		responseData, _ := ioutil.ReadAll(res.Body)
 
 		var nsRecordList = new(ListNSRecordResponse)
 		_ = json.Unmarshal(responseData, &nsRecordList)
@@ -201,9 +286,7 @@ var nsRecords = &cobra.Command{
 		}
 
 		nsDomainTable.Render()
-
 		nsKeysTable.Render()
-
 	},
 }
 
@@ -212,22 +295,33 @@ var check = &cobra.Command{
 	Short: "ensure domain is active",
 	Long:  descriptions["check"],
 	Run: func(cmd *cobra.Command, args []string) {
-		response, err := http.Put(BaseUrl+"/domains/"+DomainName+"/dns-service/check-ns", nil)
+		_, validationErr := validator.IsDomain(DomainName)
 
-		if err != nil {
-			log.Fatal(err)
+		if validationErr != nil {
+			err := helpers.ToBeColored{Expression: validationErr.Error()}
+			err.StdoutError().StopExecution()
 		}
 
-		responseData, _ := ioutil.ReadAll(response.Body)
+		request := api.RequestBag{
+			URL:    Config.GetUrl() + "/domains/" + DomainName + "/dns-service/check-ns",
+			Method: "PUT",
+		}
+
+		res, err := request.Do()
+
+		if err != nil {
+			err := helpers.ToBeColored{Expression: err.Error()}
+			err.StdoutError().StopExecution()
+		}
+
+		defer res.Body.Close()
+
+		api.HandleResponseErr(res)
+
+		responseData, _ := ioutil.ReadAll(res.Body)
 
 		var nsStatus = new(CheckNSResponse)
 		_ = json.Unmarshal(responseData, &nsStatus)
-
-		if nsStatus.Data.Status {
-			fmt.Println("NS domain is activated")
-		} else {
-			fmt.Println("NS domain is NOT activated")
-		}
 
 		fmt.Println(nsStatus.Message)
 	},
@@ -253,6 +347,8 @@ func init() {
 	domainCmd.AddCommand(check)
 	domainCmd.AddCommand(remove)
 
+	search.Flags().StringVarP(&searchKeyWord, "key-word", "k", "", descriptions["search-key-word"])
+	create.Flags().StringVarP(&DomainName, "name", "n", "", descriptions["domain-name"])
 	info.Flags().StringVarP(&DomainName, "name", "n", "", descriptions["domain-name"])
 	remove.Flags().StringVarP(&DomainName, "name", "n", "", descriptions["domain-name"])
 	remove.Flags().StringVarP(&DomainId, "id", "i", "", descriptions["domain-id"])
