@@ -20,6 +20,14 @@ type SecurityInfo struct {
 	}`json:"data"`
 }
 
+var cloudSecurityPlan string
+var cloudSecurityAvailablePlans = []string{
+	"bronze",
+	"silver",
+	"gold",
+	"platinum",
+}
+
 var cloudSecurityCmd = &cobra.Command{
 	Use:   "cloud-security",
 	Short: "Check cloud security status or update your plan",
@@ -77,9 +85,55 @@ var csServicesStatus = &cobra.Command{
 	},
 }
 
+var csUpdatePlan = &cobra.Command{
+	Use:   "update",
+	Short: "Update you subscription",
+	Long:  helpDescriptions["cs-update-plan"],
+	Run: func(cmd *cobra.Command, args []string) {
+		_, enumValidation := validator.HasString(cloudSecurityPlan, cloudSecurityAvailablePlans)
+
+		if enumValidation != nil {
+			err := helpers.ToBeColored{Expression: enumValidation.Error()}
+			err.StdoutError().StopExecution()
+		}
+
+		_, domainNameValidation := validator.IsDomain(DomainName)
+
+		if domainNameValidation != nil {
+			err := helpers.ToBeColored{Expression: domainNameValidation.Error()}
+			err.StdoutError().StopExecution()
+		}
+
+		request := api.RequestBag{
+			BodyPayload: map[string]string{"plan": cloudSecurityPlan},
+			URL:    Config.GetUrl() + "/domains/" + DomainName + "/security-service/plan",
+			Method: "PUT",
+		}
+
+		res, err := request.Do()
+
+		if err != nil {
+			err := helpers.ToBeColored{Expression: err.Error()}
+			err.StdoutError().StopExecution()
+		}
+
+		defer res.Body.Close()
+
+		api.HandleResponseErr(res)
+
+		colored := helpers.ToBeColored{Expression: "Cloud Security Updated"}
+		colored.StdoutNotice()
+	},
+}
 
 func init() {
 	rootCmd.AddCommand(cloudSecurityCmd)
+
 	cloudSecurityCmd.AddCommand(csServicesStatus)
+	cloudSecurityCmd.AddCommand(csUpdatePlan)
+
 	csServicesStatus.Flags().StringVarP(&DomainName, "name", "n", "", helpDescriptions["domain-name"])
+
+	csUpdatePlan.Flags().StringVarP(&cloudSecurityPlan, "plan", "p", "", helpDescriptions["cs-plan"])
+	csUpdatePlan.Flags().StringVarP(&DomainName, "name", "n", "", helpDescriptions["domain-name"])
 }
