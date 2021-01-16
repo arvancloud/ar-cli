@@ -102,22 +102,19 @@ var cdnAppInfo = &cobra.Command{
 
 		responseData, _ := ioutil.ReadAll(res.Body)
 
-		var cdn = new(CdnList)
+		var cdn = new(CDNInfo)
 		_ = json.Unmarshal(responseData, &cdn)
 
 		table := newTable([]string{"ID", "Name", "Vendor", "Status"})
 
-		for _, cdnApp := range cdn.Data {
-			record := []string{
-				cdnApp.Id,
-				cdnApp.Name,
-				cdnApp.Vendor,
-				cdnApp.Status,
-			}
-			table.Append(record)
+		record := []string{
+			cdn.Data.Id,
+			cdn.Data.Name,
+			cdn.Data.Vendor,
+			cdn.Data.Status,
 		}
 
-		table.Render()
+		table.Append(record)
 
 		table.Render()
 	},
@@ -188,14 +185,44 @@ var installApp = &cobra.Command{
 	},
 }
 
+
+var uninstallApp = &cobra.Command{
+	Use:   "uninstall",
+	Short: "Uninstall application from the domain",
+	Run: func(cmd *cobra.Command, args []string) {
+		request := api.RequestBag{
+			URL:    Config.GetUrl() + "/domains/" + DomainName + "/apps/" + cdnId,
+			Method: "DELETE",
+		}
+
+		res, err := request.Do()
+
+		if err != nil {
+			err := helpers.ToBeColored{Expression: err.Error()}
+			err.StdoutError().StopExecution()
+		}
+
+		defer res.Body.Close()
+
+		api.HandleResponseErr(res)
+
+		info := helpers.ToBeColored{Expression: "Application successfully uninstalled from " + DomainName}
+		info.StdoutNotice()
+	},
+}
+
 func init() {
 	rootCmd.AddCommand(cdnAppCmd)
 	cdnAppCmd.AddCommand(cdnAppList)
 	cdnAppCmd.AddCommand(cdnAppInfo)
 	cdnAppCmd.AddCommand(installedApp)
 	cdnAppCmd.AddCommand(installApp)
+	cdnAppCmd.AddCommand(uninstallApp)
+
 	cdnAppInfo.Flags().StringVarP(&cdnId, "id", "i", "", helpDescriptions["cdnapp-id"])
 	installedApp.Flags().StringVarP(&DomainName, "name", "n", "", helpDescriptions["domain-name"])
 	installApp.Flags().StringVarP(&DomainName, "name", "n", "", helpDescriptions["domain-name"])
 	installApp.Flags().StringVarP(&cdnId, "id", "i", "", helpDescriptions["cdnapp-id"])
+	uninstallApp.Flags().StringVarP(&DomainName, "name", "n", "", helpDescriptions["domain-name"])
+	uninstallApp.Flags().StringVarP(&cdnId, "id", "i", "", helpDescriptions["cdnapp-id"])
 }
