@@ -4,14 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/ebrahimahmadi/ar-cli/pkg/api"
-	"github.com/ebrahimahmadi/ar-cli/pkg/config"
 	"github.com/ebrahimahmadi/ar-cli/pkg/helpers"
 	"github.com/ebrahimahmadi/ar-cli/pkg/validator"
-	"github.com/olekukonko/tablewriter"
 	"github.com/spf13/cobra"
 	"io/ioutil"
 	"net/http"
-	"os"
 )
 
 type SearchResponse struct {
@@ -46,28 +43,12 @@ type DomainData struct {
 	CurrentNS []string          `json:"current_ns"`
 }
 
-var DomainName string
-var DomainId string
 var searchKeyWord string
-var Config = config.GetConfigInfo()
-
-var descriptions = map[string]string{
-	"command":         "Create, Search, Delete, Get, Health check and get Ns records ",
-	"search":          "Leaving the 'search' flag empty, will return all domains. Otherwise, it will filter domains containing the search keyword.",
-	"search-key-word": "Search Item",
-	"create":          "Create new domain",
-	"info":            "Get information of the domain",
-	"domain-name":     "The host name. like: example.com",
-	"domain-id":       "The domain UUID. like: 3541b0ce-e8a6-42f0-b65a-f03a7c387486",
-	"remove":          "Remove the domain",
-	"list-ns-records": "Get list of domain's root NS records and expected values",
-	"check":           "Check NS to find whether domain is activated",
-}
 
 var domainCmd = &cobra.Command{
 	Use:   "domain",
 	Short: "Interact with domains",
-	Long:  descriptions["command"],
+	Long:  helpDescriptions["domain-command"],
 	Run: func(cmd *cobra.Command, args []string) {
 		// TODO: Implement logic
 	},
@@ -76,7 +57,7 @@ var domainCmd = &cobra.Command{
 var create = &cobra.Command{
 	Use:   "create",
 	Short: "create a domain",
-	Long:  descriptions["create"],
+	Long:  helpDescriptions["domain-create"],
 	Run: func(cmd *cobra.Command, args []string) {
 		_, validationErr := validator.IsDomain(DomainName)
 
@@ -111,7 +92,7 @@ var create = &cobra.Command{
 var search = &cobra.Command{
 	Use:   "search",
 	Short: "search domains",
-	Long:  descriptions["search"],
+	Long:  helpDescriptions["domain-search"],
 	Run: func(cmd *cobra.Command, args []string) {
 		request := api.RequestBag{
 			URL:        Config.GetUrl() + "/domains",
@@ -156,7 +137,7 @@ var search = &cobra.Command{
 var info = &cobra.Command{
 	Use:   "info",
 	Short: "get a domain info",
-	Long:  descriptions["info"],
+	Long:  helpDescriptions["domain-info"],
 	Run: func(cmd *cobra.Command, args []string) {
 		_, validationErr := validator.IsDomain(DomainName)
 
@@ -205,7 +186,7 @@ var info = &cobra.Command{
 var remove = &cobra.Command{
 	Use:   "remove",
 	Short: "remove a domain",
-	Long:  descriptions["remove"],
+	Long:  helpDescriptions["domain-remove"],
 	Run: func(cmd *cobra.Command, args []string) {
 		_, validationErr := validator.IsDomain(DomainName)
 
@@ -238,7 +219,7 @@ var remove = &cobra.Command{
 var nsRecords = &cobra.Command{
 	Use:   "ns-records",
 	Short: "get list of all NS records",
-	Long:  descriptions["list-ns-records"],
+	Long:  helpDescriptions["domain-list-ns-records"],
 	Run: func(cmd *cobra.Command, args []string) {
 		_, validationErr := validator.IsDomain(DomainName)
 
@@ -293,7 +274,7 @@ var nsRecords = &cobra.Command{
 var check = &cobra.Command{
 	Use:   "check",
 	Short: "ensure domain is active",
-	Long:  descriptions["check"],
+	Long:  helpDescriptions["domain-check"],
 	Run: func(cmd *cobra.Command, args []string) {
 		_, validationErr := validator.IsDomain(DomainName)
 
@@ -327,16 +308,6 @@ var check = &cobra.Command{
 	},
 }
 
-func newTable(tableHeaders []string) *tablewriter.Table {
-	table := tablewriter.NewWriter(os.Stdout)
-
-	table.SetHeader(tableHeaders)
-	table.SetRowLine(true)
-	table.SetRowSeparator("~")
-
-	return table
-}
-
 func init() {
 	rootCmd.AddCommand(domainCmd)
 
@@ -347,11 +318,11 @@ func init() {
 	domainCmd.AddCommand(check)
 	domainCmd.AddCommand(remove)
 
-	search.Flags().StringVarP(&searchKeyWord, "key-word", "k", "", descriptions["search-key-word"])
-	create.Flags().StringVarP(&DomainName, "name", "n", "", descriptions["domain-name"])
-	info.Flags().StringVarP(&DomainName, "name", "n", "", descriptions["domain-name"])
-	remove.Flags().StringVarP(&DomainName, "name", "n", "", descriptions["domain-name"])
-	remove.Flags().StringVarP(&DomainId, "id", "i", "", descriptions["domain-id"])
-	nsRecords.Flags().StringVarP(&DomainName, "name", "n", "", descriptions["domain-name"])
-	check.Flags().StringVarP(&DomainName, "name", "n", "", descriptions["domain-name"])
+	search.Flags().StringVarP(&searchKeyWord, "key-word", "k", "", helpDescriptions["domain-search-key-word"])
+	create.Flags().StringVarP(&DomainName, "name", "n", "", helpDescriptions["domain-name"])
+	info.Flags().StringVarP(&DomainName, "name", "n", "", helpDescriptions["domain-name"])
+	remove.Flags().StringVarP(&DomainName, "name", "n", "", helpDescriptions["domain-name"])
+	remove.Flags().StringVarP(&DomainId, "id", "i", "", helpDescriptions["domain-id"])
+	nsRecords.Flags().StringVarP(&DomainName, "name", "n", "", helpDescriptions["domain-name"])
+	check.Flags().StringVarP(&DomainName, "name", "n", "", helpDescriptions["domain-name"])
 }

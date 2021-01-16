@@ -1,51 +1,139 @@
-/*
-Copyright © 2021 NAME HERE <EMAIL ADDRESS>
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
 package cmd
 
 import (
-	"fmt"
-
+	"encoding/json"
+	"github.com/ebrahimahmadi/ar-cli/pkg/api"
+	"github.com/ebrahimahmadi/ar-cli/pkg/helpers"
+	"github.com/ebrahimahmadi/ar-cli/pkg/validator"
 	"github.com/spf13/cobra"
+	"io/ioutil"
+	"strconv"
 )
 
-// cloudSecurityCmd represents the cloudSecurity command
-var cloudSecurityCmd = &cobra.Command{
-	Use:   "cloudSecurity",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
+type SecurityInfo struct {
+	Data struct{
+		Plan string `json:"plan"`
+		WAFStatus string `json:"waf_status"`
+		DDOSType string `json:"ddos_type"`
+		FWRules int `json:"firewall_rules"`
+		LimitationStatus bool `json:"limitation_status"`
+	}`json:"data"`
+}
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+var cloudSecurityPlan string
+var cloudSecurityAvailablePlans = []string{
+	"bronze",
+	"silver",
+	"gold",
+	"platinum",
+}
+
+var cloudSecurityCmd = &cobra.Command{
+	Use:   "cloud-security",
+	Short: "Check cloud security status or update your plan",
+	Long: helpDescriptions["cs-command"],
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("cloudSecurity called")
+
+	},
+}
+
+var csServicesStatus = &cobra.Command{
+	Use:   "info",
+	Short: "Get an overview of cloud security services status",
+	Long:  helpDescriptions["cs-info"],
+	Run: func(cmd *cobra.Command, args []string) {
+		_, validationErr := validator.IsDomain(DomainName)
+
+		if validationErr != nil {
+			err := helpers.ToBeColored{Expression: validationErr.Error()}
+			err.StdoutError().StopExecution()
+		}
+
+		request := api.RequestBag{
+			URL:    Config.GetUrl() + "/domains/" + DomainName + "/security-service/info",
+			Method: "GET",
+		}
+
+		res, err := request.Do()
+
+		if err != nil {
+			err := helpers.ToBeColored{Expression: err.Error()}
+			err.StdoutError().StopExecution()
+		}
+
+		defer res.Body.Close()
+
+		responseData, _ := ioutil.ReadAll(res.Body)
+
+		var securityInfo = new(SecurityInfo)
+		_ = json.Unmarshal(responseData, &securityInfo)
+
+		api.HandleResponseErr(res)
+
+		table := newTable([]string{"Subscribed Plan", "WAF", "DDOS Type", "Firewall Rules", "Limitation Status"})
+
+		record := []string{
+			securityInfo.Data.Plan,
+			securityInfo.Data.WAFStatus,
+			securityInfo.Data.DDOSType,
+			strconv.Itoa(securityInfo.Data.FWRules),
+			strconv.FormatBool(securityInfo.Data.LimitationStatus),
+		}
+
+		table.Append(record)
+		table.Render()
+	},
+}
+
+var csUpdatePlan = &cobra.Command{
+	Use:   "update",
+	Short: "Update you subscription",
+	Long:  helpDescriptions["cs-update-plan"],
+	Run: func(cmd *cobra.Command, args []string) {
+		_, enumValidation := validator.HasString(cloudSecurityPlan, cloudSecurityAvailablePlans)
+
+		if enumValidation != nil {
+			err := helpers.ToBeColored{Expression: enumValidation.Error()}
+			err.StdoutError().StopExecution()
+		}
+
+		_, domainNameValidation := validator.IsDomain(DomainName)
+
+		if domainNameValidation != nil {
+			err := helpers.ToBeColored{Expression: domainNameValidation.Error()}
+			err.StdoutError().StopExecution()
+		}
+
+		request := api.RequestBag{
+			BodyPayload: map[string]string{"plan": cloudSecurityPlan},
+			URL:    Config.GetUrl() + "/domains/" + DomainName + "/security-service/plan",
+			Method: "PUT",
+		}
+
+		res, err := request.Do()
+
+		if err != nil {
+			err := helpers.ToBeColored{Expression: err.Error()}
+			err.StdoutError().StopExecution()
+		}
+
+		defer res.Body.Close()
+
+		api.HandleResponseErr(res)
+
+		colored := helpers.ToBeColored{Expression: "Cloud Security Updated"}
+		colored.StdoutNotice()
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(cloudSecurityCmd)
 
-	// Here you will define your flags and configuration settings.
+	cloudSecurityCmd.AddCommand(csServicesStatus)
+	cloudSecurityCmd.AddCommand(csUpdatePlan)
 
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// cloudSecurityCmd.PersistentFlags().String("foo", "", "A help for foo")
+	csServicesStatus.Flags().StringVarP(&DomainName, "name", "n", "", helpDescriptions["domain-name"])
 
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// cloudSecurityCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	csUpdatePlan.Flags().StringVarP(&cloudSecurityPlan, "plan", "p", "", helpDescriptions["cs-plan"])
+	csUpdatePlan.Flags().StringVarP(&DomainName, "name", "n", "", helpDescriptions["domain-name"])
 }

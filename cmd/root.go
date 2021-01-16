@@ -2,6 +2,8 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/ebrahimahmadi/ar-cli/pkg/config"
+	"github.com/olekukonko/tablewriter"
 	"github.com/spf13/cobra"
 	"os"
 
@@ -10,6 +12,40 @@ import (
 )
 
 var cfgFile string
+
+var DomainName string
+var DomainId string
+var Config = config.GetConfigInfo()
+
+var helpDescriptions = map[string]string{
+	"domain-command":   "Create, Search, Delete, Get, Health check and get Ns records ",
+	"domain-search":          "Leaving the 'search' flag empty, will return all domains. Otherwise, it will filter domains containing the search keyword.",
+	"domain-search-key-word": "Search Item",
+	"domain-create":          "Create new domain",
+	"domain-info":            "Get information of the domain",
+	"domain-name":     "The host name. like: example.com",
+	"domain-id":       "The domain UUID. like: 3541b0ce-e8a6-42f0-b65a-f03a7c387486",
+	"domain-remove":          "Remove the domain",
+	"domain-list-ns-records": "Get list of domain's root NS records and expected values",
+	"domain-check":           "Check NS to find whether domain is activated",
+
+	"cs-command": `Get an overview of cloud security services status. Or update your security plans`,
+	"cs-info":  "Get an overview of cloud security services status",
+	"cs-update-plan": "Update your cloud security plan",
+	"cs-plan": "The plan you are wiling to subscribe to. The value should be one of: bronze, silver, gold, platinum",
+}
+
+func newTable(tableHeaders []string) *tablewriter.Table {
+	table := tablewriter.NewWriter(os.Stdout)
+	center := 1
+
+	table.SetAlignment(center)
+	table.SetHeader(tableHeaders)
+	table.SetRowLine(true)
+	table.SetRowSeparator("~")
+
+	return table
+}
 
 var rootCmd = &cobra.Command{
 	Use:   "ar-cli",
