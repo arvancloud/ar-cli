@@ -15,7 +15,6 @@ var cfgFile string
 
 var DomainName string
 var DomainId string
-var searchKeyWord string
 var Config = config.GetConfigInfo()
 
 var helpDescriptions = map[string]string{
@@ -33,6 +32,7 @@ var helpDescriptions = map[string]string{
 	"cs-command": `Get an overview of cloud security services status. Or update your security plans`,
 	"cs-info":  "Get an overview of cloud security services status",
 	"cs-update-plan": "Update your cloud security plan",
+	"cs-plan": "The plan you are wiling to subscribe to. The value should be one of: bronze, silver, gold, platinum",
 }
 
 func newTable(tableHeaders []string) *tablewriter.Table {

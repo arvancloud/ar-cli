@@ -43,6 +43,8 @@ type DomainData struct {
 	CurrentNS []string          `json:"current_ns"`
 }
 
+var searchKeyWord string
+
 var domainCmd = &cobra.Command{
 	Use:   "domain",
 	Short: "Interact with domains",
