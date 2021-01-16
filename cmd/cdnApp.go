@@ -165,9 +165,26 @@ var installedApp = &cobra.Command{
 
 var installApp = &cobra.Command{
 	Use:   "install",
-	Short: "Get list of all applications installed on a domain",
+	Short: "Install the application on the domain",
 	Run: func(cmd *cobra.Command, args []string) {
-		
+		request := api.RequestBag{
+			URL:    Config.GetUrl() + "/domains/" + DomainName + "/apps/" + cdnId,
+			Method: "POST",
+		}
+
+		res, err := request.Do()
+
+		if err != nil {
+			err := helpers.ToBeColored{Expression: err.Error()}
+			err.StdoutError().StopExecution()
+		}
+
+		defer res.Body.Close()
+
+		api.HandleResponseErr(res)
+
+		info := helpers.ToBeColored{Expression: "Application successfully installed on " + DomainName}
+		info.StdoutNotice()
 	},
 }
 
