@@ -3,7 +3,6 @@ package api
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"github.com/ebrahimahmadi/ar-cli/pkg/config"
 	"github.com/ebrahimahmadi/ar-cli/pkg/helpers"
 	"net/http"
@@ -14,6 +13,7 @@ var Config = config.GetConfigInfo()
 var potentialErrMessages = map[int]string{
 	401: "Access Token is missing or invalid",
 	422: "The given data is invalid",
+	402: "Payment Required. Please check your financial kinds of stuff in your account",
 	404: "Resource not found",
 }
 
@@ -29,10 +29,6 @@ type Test struct {
 }
 
 func (r *RequestBag) Do() (*http.Response, error) {
-	b := new(bytes.Buffer)
-	for key, value := range r.BodyPayload {
-		fmt.Fprintf(b, "%s=\"%s\"\n", key, value)
-	}
 	body, err := json.Marshal(r.BodyPayload)
 
 	if err != nil {
