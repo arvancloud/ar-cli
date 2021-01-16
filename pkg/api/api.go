@@ -15,6 +15,7 @@ var potentialErrMessages = map[int]string{
 	422: "The given data is invalid",
 	402: "Payment Required. Please check your financial kinds of stuff in your account",
 	404: "Resource not found",
+	500: "Something went wrong on our end",
 }
 
 type RequestBag struct {

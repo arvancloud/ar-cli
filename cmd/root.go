@@ -33,6 +33,12 @@ var helpDescriptions = map[string]string{
 	"cs-info":  "Get an overview of cloud security services status",
 	"cs-update-plan": "Update your cloud security plan",
 	"cs-plan": "The plan you are wiling to subscribe to. The value should be one of: bronze, silver, gold, platinum",
+
+	"cdnapp-command": "Find, List, Install and Uninstall the application from domain",
+	"cdnapp-list": "List all available CDNs",
+	"cdnapp-info": "get cdn using the given cdn id",
+	"cdnapp-id": "The cdn app UUID you are wiling to receive id",
+	"cdnapp-event": "Event that you want to trigger. The value should be on of: before-new-install, new-install",
 }
 
 func newTable(tableHeaders []string) *tablewriter.Table {
