@@ -130,6 +130,13 @@ var installedApp = &cobra.Command{
 	Use:   "installed-apps",
 	Short: "Get list of all applications installed on a domain",
 	Run: func(cmd *cobra.Command, args []string) {
+		_, validationErr := validator.IsDomain(DomainName)
+
+		if validationErr != nil {
+			err := helpers.ToBeColored{Expression: validationErr.Error()}
+			err.StdoutError().StopExecution()
+		}
+
 		request := api.RequestBag{
 			URL:    Config.GetUrl() + "/domains/" + DomainName + "/apps",
 			Method: "GET",
@@ -170,6 +177,13 @@ var installApp = &cobra.Command{
 	Use:   "install",
 	Short: "Install the application on the domain",
 	Run: func(cmd *cobra.Command, args []string) {
+		_, domainValidationErr := validator.IsDomain(DomainName)
+
+		if domainValidationErr != nil {
+			err := helpers.ToBeColored{Expression: domainValidationErr.Error()}
+			err.StdoutError().StopExecution()
+		}
+
 		request := api.RequestBag{
 			URL:    Config.GetUrl() + "/domains/" + DomainName + "/apps/" + cdnId,
 			Method: "POST",
@@ -196,6 +210,13 @@ var uninstallApp = &cobra.Command{
 	Use:   "uninstall",
 	Short: "Uninstall application from the domain",
 	Run: func(cmd *cobra.Command, args []string) {
+		_, domainValidationErr := validator.IsDomain(DomainName)
+
+		if domainValidationErr != nil {
+			err := helpers.ToBeColored{Expression: domainValidationErr.Error()}
+			err.StdoutError().StopExecution()
+		}
+
 		request := api.RequestBag{
 			URL:    Config.GetUrl() + "/domains/" + DomainName + "/apps/" + cdnId,
 			Method: "DELETE",
@@ -222,10 +243,16 @@ var triggerWebHook = &cobra.Command{
 	Use:   "trigger",
 	Short: "trigger webhook event",
 	Run: func(cmd *cobra.Command, args []string) {
-		_, validationErr := validator.HasString(eventToTrigger, CdnTriggerEvents)
+		_, domainValidationErr := validator.IsDomain(DomainName)
+		_, eventValidationErr := validator.HasString(eventToTrigger, CdnTriggerEvents)
 
-		if validationErr != nil {
-			err := helpers.ToBeColored{Expression: validationErr.Error()}
+		if domainValidationErr != nil {
+			err := helpers.ToBeColored{Expression: domainValidationErr.Error()}
+			err.StdoutError().StopExecution()
+		}
+
+		if eventValidationErr != nil {
+			err := helpers.ToBeColored{Expression: eventValidationErr.Error()}
 			err.StdoutError().StopExecution()
 		}
 
@@ -263,12 +290,25 @@ func init() {
 	cdnAppCmd.AddCommand(triggerWebHook)
 
 	cdnAppInfo.Flags().StringVarP(&cdnId, "id", "i", "", helpDescriptions["cdnapp-id"])
+	cdnAppInfo.MarkFlagRequired("id")
+
 	installedApp.Flags().StringVarP(&DomainName, "name", "n", "", helpDescriptions["domain-name"])
+	installedApp.MarkFlagRequired("name")
+
 	installApp.Flags().StringVarP(&DomainName, "name", "n", "", helpDescriptions["domain-name"])
 	installApp.Flags().StringVarP(&cdnId, "id", "i", "", helpDescriptions["cdnapp-id"])
+	installApp.MarkFlagRequired("name")
+	installApp.MarkFlagRequired("id")
+
 	uninstallApp.Flags().StringVarP(&DomainName, "name", "n", "", helpDescriptions["domain-name"])
 	uninstallApp.Flags().StringVarP(&cdnId, "id", "i", "", helpDescriptions["cdnapp-id"])
+	uninstallApp.MarkFlagRequired("name")
+	uninstallApp.MarkFlagRequired("id")
+
 	triggerWebHook.Flags().StringVarP(&DomainName, "name", "n", "", helpDescriptions["domain-name"])
 	triggerWebHook.Flags().StringVarP(&cdnId, "id", "i", "", helpDescriptions["cdnapp-id"])
 	triggerWebHook.Flags().StringVarP(&eventToTrigger, "event", "e", "", helpDescriptions["cdnapp-id"])
+	triggerWebHook.MarkFlagRequired("name")
+	triggerWebHook.MarkFlagRequired("id")
+	triggerWebHook.MarkFlagRequired("event")
 }
