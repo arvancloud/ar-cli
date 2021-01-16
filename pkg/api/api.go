@@ -1,77 +1,65 @@
-package http
+package api
 
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
+	"fmt"
 	"github.com/ebrahimahmadi/ar-cli/pkg/config"
-	"log"
+	"github.com/ebrahimahmadi/ar-cli/pkg/helpers"
 	"net/http"
 )
 
 var Config = config.GetConfigInfo()
 
-func Get(url string, queries map[string]string) (*http.Response, error) {
-	req := newRequest("GET", url, nil)
-
-	if queries != nil {
-		for key, value := range queries {
-			addQueryToUrl(*req, key, value)
-		}
-	}
-
-	response, responseErr := do(req)
-
-	if responseErr != nil {
-		return nil, responseErr
-	} else {
-		return handleResponse(response)
-	}
+var potentialErrMessages = map[int]string{
+	401: "Access Token is missing or invalid",
+	422: "The given data is invalid",
+	404: "Resource not found",
 }
 
-func Delete(url string, payload map[string]string, queries map[string]string) (*http.Response, error) {
-	req := newRequest("DELETE", url, payload)
-
-	if queries != nil {
-		for key, value := range queries {
-			addQueryToUrl(*req, key, value)
-		}
-	}
-
-	response, responseErr := do(req)
-
-	if responseErr != nil {
-		return nil, responseErr
-	} else {
-		return handleResponse(response)
-	}
+type RequestBag struct {
+	BodyPayload map[string]string
+	URLQueries  map[string]string
+	URL         string
+	Method      string
 }
 
-func Post(url string, payload map[string]string) (*http.Response, error) {
-	req := newRequest("POST", url, payload)
-
-	response, responseErr := do(req)
-
-	if responseErr != nil {
-		return nil, responseErr
-	} else {
-		return handleResponse(response)
-	}
+type Test struct {
+	Id string `json:"id"`
 }
 
-
-func Put(url string, payload map[string]string) (*http.Response, error) {
-	req := newRequest("PUT", url, payload)
-
-	response, responseErr := do(req)
-
-	if responseErr != nil {
-		return nil, responseErr
-	} else {
-		return handleResponse(response)
+func (r *RequestBag) Do() (*http.Response, error) {
+	b := new(bytes.Buffer)
+	for key, value := range r.BodyPayload {
+		fmt.Fprintf(b, "%s=\"%s\"\n", key, value)
 	}
+	body, err := json.Marshal(r.BodyPayload)
+
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(r.Method, r.URL, bytes.NewBuffer(body))
+
+	if err != nil {
+		return nil, err
+	}
+
+	for key, value := range r.URLQueries {
+		addQueryToUrl(*req, key, value)
+	}
+
+	return do(req)
 }
 
+func HandleResponseErr(response *http.Response) {
+	statusOK := response.StatusCode >= 200 && response.StatusCode < 300
+
+	if !statusOK {
+		err := helpers.ToBeColored{Expression: potentialErrMessages[response.StatusCode]}
+		err.StdoutError().StopExecution()
+	}
+}
 
 func addQueryToUrl(request http.Request, key string, value string) {
 	query := request.URL.Query()
@@ -81,37 +69,9 @@ func addQueryToUrl(request http.Request, key string, value string) {
 	request.URL.RawQuery = query.Encode()
 }
 
-func newRequest(method string, url string, payload map[string]string) *http.Request {
-	postBody, _ := json.Marshal(payload)
-
-	req, err := http.NewRequest(method, url, bytes.NewBuffer(postBody))
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	return req
-}
-
-func handleResponse(response *http.Response) (*http.Response, error) {
-	statusOK := response.StatusCode >= 200 && response.StatusCode < 300
-
-	if !statusOK {
-		return nil, errors.New(response.Status)
-	} else {
-		return response, nil
-	}
-}
-
 func do(req *http.Request) (*http.Response, error) {
 	req.Header.Set("content-type", "application/json")
 	req.Header.Set("Authorization", Config.GetApiKey())
 
-	res, err := http.DefaultClient.Do(req)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return res, nil
+	return http.DefaultClient.Do(req)
 }
