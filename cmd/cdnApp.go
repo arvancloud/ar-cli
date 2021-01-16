@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/ebrahimahmadi/ar-cli/pkg/api"
 	"github.com/ebrahimahmadi/ar-cli/pkg/helpers"
+	"github.com/ebrahimahmadi/ar-cli/pkg/validator"
 	"io/ioutil"
 
 	"github.com/spf13/cobra"
@@ -28,6 +29,11 @@ type CDNData struct {
 }
 
 var cdnId string
+var eventToTrigger string
+var CdnTriggerEvents = []string{
+	"before-new-install",
+	"new-install",
+}
 
 var cdnAppCmd = &cobra.Command{
 	Use:   "cdn",
@@ -211,6 +217,42 @@ var uninstallApp = &cobra.Command{
 	},
 }
 
+
+var triggerWebHook = &cobra.Command{
+	Use:   "trigger",
+	Short: "trigger webhook event",
+	Run: func(cmd *cobra.Command, args []string) {
+		_, validationErr := validator.HasString(eventToTrigger, CdnTriggerEvents)
+
+		if validationErr != nil {
+			err := helpers.ToBeColored{Expression: validationErr.Error()}
+			err.StdoutError().StopExecution()
+		}
+
+		request := api.RequestBag{
+			BodyPayload: map[string]string{
+				"event": eventToTrigger,
+			},
+			URL:    Config.GetUrl() + "/domains/" + DomainName + "/apps/" + cdnId + "/actions/trigger_webhook",
+			Method: "POST",
+		}
+
+		res, err := request.Do()
+
+		if err != nil {
+			err := helpers.ToBeColored{Expression: err.Error()}
+			err.StdoutError().StopExecution()
+		}
+
+		defer res.Body.Close()
+
+		api.HandleResponseErr(res)
+
+		info := helpers.ToBeColored{Expression: "Application successfully uninstalled from " + DomainName}
+		info.StdoutNotice()
+	},
+}
+
 func init() {
 	rootCmd.AddCommand(cdnAppCmd)
 	cdnAppCmd.AddCommand(cdnAppList)
@@ -218,6 +260,7 @@ func init() {
 	cdnAppCmd.AddCommand(installedApp)
 	cdnAppCmd.AddCommand(installApp)
 	cdnAppCmd.AddCommand(uninstallApp)
+	cdnAppCmd.AddCommand(triggerWebHook)
 
 	cdnAppInfo.Flags().StringVarP(&cdnId, "id", "i", "", helpDescriptions["cdnapp-id"])
 	installedApp.Flags().StringVarP(&DomainName, "name", "n", "", helpDescriptions["domain-name"])
@@ -225,4 +268,7 @@ func init() {
 	installApp.Flags().StringVarP(&cdnId, "id", "i", "", helpDescriptions["cdnapp-id"])
 	uninstallApp.Flags().StringVarP(&DomainName, "name", "n", "", helpDescriptions["domain-name"])
 	uninstallApp.Flags().StringVarP(&cdnId, "id", "i", "", helpDescriptions["cdnapp-id"])
+	triggerWebHook.Flags().StringVarP(&DomainName, "name", "n", "", helpDescriptions["domain-name"])
+	triggerWebHook.Flags().StringVarP(&cdnId, "id", "i", "", helpDescriptions["cdnapp-id"])
+	triggerWebHook.Flags().StringVarP(&eventToTrigger, "event", "e", "", helpDescriptions["cdnapp-id"])
 }
