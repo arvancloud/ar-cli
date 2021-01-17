@@ -1,51 +1,103 @@
-/*
-Copyright © 2021 NAME HERE <EMAIL ADDRESS>
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
 package cmd
 
 import (
-	"fmt"
+	"encoding/json"
+	"github.com/ebrahimahmadi/ar-cli/pkg/api"
+	"github.com/ebrahimahmadi/ar-cli/pkg/helpers"
+	"github.com/ebrahimahmadi/ar-cli/pkg/validator"
+	"io/ioutil"
+	"strconv"
 
 	"github.com/spf13/cobra"
 )
 
-// dnsCmd represents the dns command
+type DNSList struct {
+	Data []DnsRecord
+}
+
+type DnsRecord struct {
+	ID      string `json:"id"`
+	DNSType string `json:"type"`
+	Name    string `json:"name"`
+	Value   struct {
+		Host string `json:"host"`
+	} `json:"value"`
+	TTL           int    `json:"ttl"`
+	Cloud         bool   `json:"cloud"`
+	UpstreamHTTPS string `json:"upstream_https"`
+	IPFilter      struct {
+		Count     string `json:"count"`
+		Order     string `json:"order"`
+		GEOFilter string `json:"geo_filter"`
+	} `json:"ip_filter_mode"`
+	CanDelete   bool `json:"can_delete"`
+	IsProtected bool `json:"is_protected"`
+}
+
 var dnsCmd = &cobra.Command{
 	Use:   "dns",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "Interact with Arvan DNS",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("dns called")
+		cmd.Help()
 	},
 }
 
+var dnsList = &cobra.Command{
+	Use:   "list",
+	Short: "Get list of DNS records",
+	Run: func(cmd *cobra.Command, args []string) {
+		_, validationErr := validator.IsDomain(DomainName)
+
+		if validationErr != nil {
+			err := helpers.ToBeColored{Expression: validationErr.Error()}
+			err.StdoutError().StopExecution()
+		}
+
+		request := api.RequestBag{
+			URL:    Config.GetUrl() + "/domains/" + DomainName + "/dns-records",
+			Method: "GET",
+		}
+
+		res, err := request.Do()
+
+		if err != nil {
+			err := helpers.ToBeColored{Expression: err.Error()}
+			err.StdoutError().StopExecution()
+		}
+
+		defer res.Body.Close()
+
+		api.HandleResponseErr(res)
+
+		responseData, _ := ioutil.ReadAll(res.Body)
+
+		var dnsRecords = new(DNSList)
+		_ = json.Unmarshal(responseData, &dnsRecords)
+
+		table := newTable([]string{"Type", "Name", "Host", "TTL", "Cloud", "Upstream HTTPS", "Protected?", "IP GEO Filter", "IP Filter Order", "IP Filter Count"})
+
+		for _, foundDomain := range dnsRecords.Data {
+			record := []string{
+				foundDomain.DNSType,
+				foundDomain.Name,
+				foundDomain.Value.Host,
+				strconv.Itoa(foundDomain.TTL),
+				strconv.FormatBool(foundDomain.Cloud),
+				foundDomain.UpstreamHTTPS,
+				strconv.FormatBool(foundDomain.IsProtected),
+				foundDomain.IPFilter.GEOFilter,
+				foundDomain.IPFilter.Order,
+				foundDomain.IPFilter.Count,
+			}
+			table.Append(record)
+		}
+
+		table.Render()
+	},
+}
 func init() {
 	rootCmd.AddCommand(dnsCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// dnsCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// dnsCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	dnsCmd.AddCommand(dnsList)
+	dnsList.Flags().StringVarP(&DomainName, "name", "n", "", helpDescriptions["domain-name"])
+	dnsList.MarkFlagRequired("name")
 }
