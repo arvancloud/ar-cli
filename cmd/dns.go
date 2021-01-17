@@ -11,8 +11,12 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type DNSList struct {
-	Data []DnsRecord
+type RecordList struct {
+	Data []DnsRecord `json:"data"`
+}
+
+type RecordInfo struct {
+	Data DnsRecord `json:"data"`
 }
 
 type DnsRecord struct {
@@ -41,6 +45,8 @@ var dnsCmd = &cobra.Command{
 		cmd.Help()
 	},
 }
+
+var dnsRecordId string
 
 var dnsList = &cobra.Command{
 	Use:   "list",
@@ -71,13 +77,14 @@ var dnsList = &cobra.Command{
 
 		responseData, _ := ioutil.ReadAll(res.Body)
 
-		var dnsRecords = new(DNSList)
+		var dnsRecords = new(RecordList)
 		_ = json.Unmarshal(responseData, &dnsRecords)
 
-		table := newTable([]string{"Type", "Name", "Host", "TTL", "Cloud", "Upstream HTTPS", "Protected?", "IP GEO Filter", "IP Filter Order", "IP Filter Count"})
+		table := newTable([]string{"ID", "Type", "Name", "Host", "TTL", "Cloud", "Upstream HTTPS", "Protected?", "IP GEO Filter", "IP Filter Order", "IP Filter Count"})
 
 		for _, foundDomain := range dnsRecords.Data {
 			record := []string{
+				foundDomain.ID,
 				foundDomain.DNSType,
 				foundDomain.Name,
 				foundDomain.Value.Host,
@@ -95,9 +102,70 @@ var dnsList = &cobra.Command{
 		table.Render()
 	},
 }
+
+var dnsGet = &cobra.Command{
+	Use:   "info",
+	Short: "Get information of a record",
+	Run: func(cmd *cobra.Command, args []string) {
+		_, validationErr := validator.IsDomain(DomainName)
+
+		if validationErr != nil {
+			err := helpers.ToBeColored{Expression: validationErr.Error()}
+			err.StdoutError().StopExecution()
+		}
+
+		request := api.RequestBag{
+			URL:    Config.GetUrl() + "/domains/" + DomainName + "/dns-records/" + dnsRecordId,
+			Method: "GET",
+		}
+
+		res, err := request.Do()
+
+		if err != nil {
+			err := helpers.ToBeColored{Expression: err.Error()}
+			err.StdoutError().StopExecution()
+		}
+
+		defer res.Body.Close()
+
+		api.HandleResponseErr(res)
+
+		responseData, _ := ioutil.ReadAll(res.Body)
+
+		var dnsRecord = new(RecordInfo)
+		_ = json.Unmarshal(responseData, &dnsRecord)
+
+		table := newTable([]string{"ID", "Type", "Name", "Host", "TTL", "Cloud", "Upstream HTTPS", "Protected?", "IP GEO Filter", "IP Filter Order", "IP Filter Count"})
+
+		record := []string{
+			dnsRecord.Data.ID,
+			dnsRecord.Data.DNSType,
+			dnsRecord.Data.Name,
+			dnsRecord.Data.Value.Host,
+			strconv.Itoa(dnsRecord.Data.TTL),
+			strconv.FormatBool(dnsRecord.Data.Cloud),
+			dnsRecord.Data.UpstreamHTTPS,
+			strconv.FormatBool(dnsRecord.Data.IsProtected),
+			dnsRecord.Data.IPFilter.GEOFilter,
+			dnsRecord.Data.IPFilter.Order,
+			dnsRecord.Data.IPFilter.Count,
+		}
+		table.Append(record)
+
+		table.Render()
+	},
+}
+
 func init() {
 	rootCmd.AddCommand(dnsCmd)
 	dnsCmd.AddCommand(dnsList)
+	dnsCmd.AddCommand(dnsGet)
+
 	dnsList.Flags().StringVarP(&DomainName, "name", "n", "", helpDescriptions["domain-name"])
 	dnsList.MarkFlagRequired("name")
+
+	dnsGet.Flags().StringVarP(&DomainName, "name", "n", "", helpDescriptions["domain-name"])
+	dnsGet.Flags().StringVarP(&dnsRecordId, "record-id", "r", "", helpDescriptions["dns-record-id"])
+	dnsGet.MarkFlagRequired("name")
+	dnsGet.MarkFlagRequired("record-id")
 }

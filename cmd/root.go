@@ -39,6 +39,8 @@ var helpDescriptions = map[string]string{
 	"cdnapp-info": "get cdn using the given cdn id",
 	"cdnapp-id": "The cdn app UUID you are wiling to receive id",
 	"cdnapp-event": "Event that you want to trigger. The value should be on of: before-new-install, new-install",
+
+	"dns-record-id": "ID of the DNS record",
 }
 
 func newTable(tableHeaders []string) *tablewriter.Table {
