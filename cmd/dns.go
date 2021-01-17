@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/ebrahimahmadi/ar-cli/pkg/api"
 	"github.com/ebrahimahmadi/ar-cli/pkg/helpers"
 	"github.com/ebrahimahmadi/ar-cli/pkg/validator"
@@ -156,10 +157,43 @@ var dnsGet = &cobra.Command{
 	},
 }
 
+var dnsRemove = &cobra.Command{
+	Use:   "remove",
+	Short: "Remove a DNS record",
+	Run: func(cmd *cobra.Command, args []string) {
+		_, validationErr := validator.IsDomain(DomainName)
+
+		if validationErr != nil {
+			err := helpers.ToBeColored{Expression: validationErr.Error()}
+			err.StdoutError().StopExecution()
+		}
+
+		request := api.RequestBag{
+			URL:    Config.GetUrl() + "/domains/" + DomainName + "/dns-records/" + dnsRecordId,
+			Method: "DELETE",
+		}
+
+		res, err := request.Do()
+
+		if err != nil {
+			err := helpers.ToBeColored{Expression: err.Error()}
+			err.StdoutError().StopExecution()
+		}
+
+		defer res.Body.Close()
+
+		api.HandleResponseErr(res)
+
+		fmt.Println("Removed Successfully")
+	},
+}
+
+
 func init() {
 	rootCmd.AddCommand(dnsCmd)
 	dnsCmd.AddCommand(dnsList)
 	dnsCmd.AddCommand(dnsGet)
+	dnsCmd.AddCommand(dnsRemove)
 
 	dnsList.Flags().StringVarP(&DomainName, "name", "n", "", helpDescriptions["domain-name"])
 	dnsList.MarkFlagRequired("name")
@@ -168,4 +202,9 @@ func init() {
 	dnsGet.Flags().StringVarP(&dnsRecordId, "record-id", "r", "", helpDescriptions["dns-record-id"])
 	dnsGet.MarkFlagRequired("name")
 	dnsGet.MarkFlagRequired("record-id")
+
+	dnsRemove.Flags().StringVarP(&DomainName, "name", "n", "", helpDescriptions["domain-name"])
+	dnsRemove.Flags().StringVarP(&dnsRecordId, "record-id", "r", "", helpDescriptions["dns-record-id"])
+	dnsRemove.MarkFlagRequired("name")
+	dnsRemove.MarkFlagRequired("record-id")
 }
