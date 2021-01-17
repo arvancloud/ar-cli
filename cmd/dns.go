@@ -47,6 +47,7 @@ var dnsCmd = &cobra.Command{
 	},
 }
 
+var isRecordServedOnCloud bool
 var dnsRecordId string
 
 var dnsList = &cobra.Command{
@@ -189,11 +190,48 @@ var dnsRemove = &cobra.Command{
 }
 
 
+var dnsToggle = &cobra.Command{
+	Use:   "toggle",
+	Short: "Toggle Cloud Status",
+	Long: "Toggle cloud status (To proxy or not proxy, that's the question!)",
+	Run: func(cmd *cobra.Command, args []string) {
+		_, validationErr := validator.IsDomain(DomainName)
+
+		if validationErr != nil {
+			err := helpers.ToBeColored{Expression: validationErr.Error()}
+			err.StdoutError().StopExecution()
+		}
+
+		request := api.RequestBag{
+			BodyPayload: map[string]string{
+				"cloud": strconv.FormatBool(isRecordServedOnCloud),
+			},
+			URL:    Config.GetUrl() + "/domains/" + DomainName + "/dns-records/" + dnsRecordId + "/cloud",
+			Method: "PUT",
+		}
+
+		res, err := request.Do()
+
+		if err != nil {
+			err := helpers.ToBeColored{Expression: err.Error()}
+			err.StdoutError().StopExecution()
+		}
+
+		defer res.Body.Close()
+
+		api.HandleResponseErr(res)
+
+		notice := helpers.ToBeColored{Expression: "Toggled Successfully"}
+		notice.StdoutNotice()
+	},
+}
+
 func init() {
 	rootCmd.AddCommand(dnsCmd)
 	dnsCmd.AddCommand(dnsList)
 	dnsCmd.AddCommand(dnsGet)
 	dnsCmd.AddCommand(dnsRemove)
+	dnsCmd.AddCommand(dnsToggle)
 
 	dnsList.Flags().StringVarP(&DomainName, "name", "n", "", helpDescriptions["domain-name"])
 	dnsList.MarkFlagRequired("name")
@@ -207,4 +245,12 @@ func init() {
 	dnsRemove.Flags().StringVarP(&dnsRecordId, "record-id", "r", "", helpDescriptions["dns-record-id"])
 	dnsRemove.MarkFlagRequired("name")
 	dnsRemove.MarkFlagRequired("record-id")
+
+	dnsToggle.Flags().StringVarP(&DomainName, "name", "n", "", helpDescriptions["domain-name"])
+	dnsToggle.Flags().StringVarP(&dnsRecordId, "record-id", "r", "", helpDescriptions["dns-record-id"])
+	dnsToggle.Flags().BoolVarP(&isRecordServedOnCloud, "cloud", "c", false, helpDescriptions["dns-record-cloud"])
+	dnsToggle.MarkFlagRequired("name")
+	dnsToggle.MarkFlagRequired("record-id")
+	dnsToggle.MarkFlagRequired("cloud")
+
 }

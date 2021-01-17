@@ -41,6 +41,7 @@ var helpDescriptions = map[string]string{
 	"cdnapp-event": "Event that you want to trigger. The value should be on of: before-new-install, new-install",
 
 	"dns-record-id": "ID of the DNS record",
+	"dns-record-cloud": "If is true the cloud status will be served over cloud, otherwise no!",
 }
 
 func newTable(tableHeaders []string) *tablewriter.Table {
