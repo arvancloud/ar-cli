@@ -2,8 +2,8 @@ package cmd
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/ebrahimahmadi/ar-cli/pkg/api"
+	"github.com/ebrahimahmadi/ar-cli/pkg/factories/dns_records"
 	"github.com/ebrahimahmadi/ar-cli/pkg/helpers"
 	"github.com/ebrahimahmadi/ar-cli/pkg/validator"
 	"io/ioutil"
@@ -38,6 +38,11 @@ type DnsRecord struct {
 	CanDelete   bool `json:"can_delete"`
 	IsProtected bool `json:"is_protected"`
 }
+
+var ipV4 string
+var port int
+var country string
+var weight int
 
 var dnsCmd = &cobra.Command{
 	Use:   "dns",
@@ -185,15 +190,15 @@ var dnsRemove = &cobra.Command{
 
 		api.HandleResponseErr(res)
 
-		fmt.Println("Removed Successfully")
+		notice := helpers.ToBeColored{Expression: "Removed Successfully"}
+		notice.StdoutError()
 	},
 }
-
 
 var dnsToggle = &cobra.Command{
 	Use:   "toggle",
 	Short: "Toggle Cloud Status",
-	Long: "Toggle cloud status (To proxy or not proxy, that's the question!)",
+	Long:  "Toggle cloud status (To proxy or not proxy, that's the question!)",
 	Run: func(cmd *cobra.Command, args []string) {
 		_, validationErr := validator.IsDomain(DomainName)
 
@@ -226,12 +231,65 @@ var dnsToggle = &cobra.Command{
 	},
 }
 
+var dnsCreate = &cobra.Command{
+	Use:   "create",
+	Short: "Toggle Cloud Status",
+	Long:  "Toggle cloud status (To proxy or not proxy, that's the question!)",
+	Run: func(cmd *cobra.Command, args []string) {
+		cmd.Help()
+	},
+}
+
+var aRecord = &cobra.Command{
+	Use:   "a-record",
+	Short: "Create A type DNS record ",
+	Run: func(cmd *cobra.Command, args []string) {
+		if validDomain, validationErr := validator.IsDomain(DomainName); validDomain {
+			err := helpers.ToBeColored{Expression: validationErr.Error()}
+			err.StdoutError().StopExecution()
+		}
+
+		if validIp, ipValidationErr := validator.IsValidIp(ipV4); validIp {
+			err := helpers.ToBeColored{Expression: ipValidationErr.Error()}
+			err.StdoutError().StopExecution()
+		}
+
+		//value := dns_records.ARecord{
+		//	//IP: ipV4,
+		//	//Country: country,
+		//	//Weight: weight,
+		//	//Port: port,
+		//}
+
+		request := api.RequestBag{
+			URL:    Config.GetUrl() + "/domains/" + DomainName + "/dns-records",
+			Method: "POST",
+		}
+
+		res, err := request.Do()
+
+		if err != nil {
+			err := helpers.ToBeColored{Expression: err.Error()}
+			err.StdoutError().StopExecution()
+		}
+
+		defer res.Body.Close()
+
+		api.HandleResponseErr(res)
+
+		notice := helpers.ToBeColored{Expression: "Toggled Successfully"}
+		notice.StdoutNotice()
+	},
+}
+
 func init() {
 	rootCmd.AddCommand(dnsCmd)
 	dnsCmd.AddCommand(dnsList)
 	dnsCmd.AddCommand(dnsGet)
 	dnsCmd.AddCommand(dnsRemove)
 	dnsCmd.AddCommand(dnsToggle)
+	dnsCmd.AddCommand(dnsCreate)
+	dnsCreate.AddCommand(aRecord)
 
 	dnsList.Flags().StringVarP(&DomainName, "name", "n", "", helpDescriptions["domain-name"])
 	dnsList.MarkFlagRequired("name")
@@ -252,5 +310,13 @@ func init() {
 	dnsToggle.MarkFlagRequired("name")
 	dnsToggle.MarkFlagRequired("record-id")
 	dnsToggle.MarkFlagRequired("cloud")
+
+	aRecord.Flags().StringVarP(&DomainName, "name", "n", "", helpDescriptions["domain-name"])
+	aRecord.Flags().StringVarP(&ipV4, "ip", "i", "", helpDescriptions["dns-ip"])
+	aRecord.Flags().IntVarP(&port, "port", "p", 0, helpDescriptions["dns-port"])
+	aRecord.Flags().IntVarP(&weight, "weight", "w", 0, helpDescriptions["dns-port"])
+	aRecord.Flags().StringVarP(&country, "country", "c", "", helpDescriptions["dns-port"])
+	aRecord.MarkFlagRequired("ip")
+	aRecord.MarkFlagRequired("name")
 
 }

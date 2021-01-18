@@ -42,6 +42,8 @@ var helpDescriptions = map[string]string{
 
 	"dns-record-id": "ID of the DNS record",
 	"dns-record-cloud": "If is true the cloud status will be served over cloud, otherwise no!",
+	"dns-ip": "Ip Address that should be pointed to",
+	"dns-port": "port ",
 }
 
 func newTable(tableHeaders []string) *tablewriter.Table {
