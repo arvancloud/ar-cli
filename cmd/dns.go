@@ -3,7 +3,6 @@ package cmd
 import (
 	"encoding/json"
 	"github.com/ebrahimahmadi/ar-cli/pkg/api"
-	"github.com/ebrahimahmadi/ar-cli/pkg/factories/dns_records"
 	"github.com/ebrahimahmadi/ar-cli/pkg/helpers"
 	"github.com/ebrahimahmadi/ar-cli/pkg/validator"
 	"io/ioutil"
@@ -208,7 +207,7 @@ var dnsToggle = &cobra.Command{
 		}
 
 		request := api.RequestBag{
-			BodyPayload: map[string]string{
+			BodyPayload: map[string]interface{}{
 				"cloud": strconv.FormatBool(isRecordServedOnCloud),
 			},
 			URL:    Config.GetUrl() + "/domains/" + DomainName + "/dns-records/" + dnsRecordId + "/cloud",
@@ -244,41 +243,15 @@ var aRecord = &cobra.Command{
 	Use:   "a-record",
 	Short: "Create A type DNS record ",
 	Run: func(cmd *cobra.Command, args []string) {
-		if validDomain, validationErr := validator.IsDomain(DomainName); validDomain {
+		if validDomain, validationErr := validator.IsDomain(DomainName); !validDomain {
 			err := helpers.ToBeColored{Expression: validationErr.Error()}
 			err.StdoutError().StopExecution()
 		}
 
-		if validIp, ipValidationErr := validator.IsValidIp(ipV4); validIp {
+		if validIp, ipValidationErr := validator.IsValidIp(ipV4); !validIp {
 			err := helpers.ToBeColored{Expression: ipValidationErr.Error()}
 			err.StdoutError().StopExecution()
 		}
-
-		//value := dns_records.ARecord{
-		//	//IP: ipV4,
-		//	//Country: country,
-		//	//Weight: weight,
-		//	//Port: port,
-		//}
-
-		request := api.RequestBag{
-			URL:    Config.GetUrl() + "/domains/" + DomainName + "/dns-records",
-			Method: "POST",
-		}
-
-		res, err := request.Do()
-
-		if err != nil {
-			err := helpers.ToBeColored{Expression: err.Error()}
-			err.StdoutError().StopExecution()
-		}
-
-		defer res.Body.Close()
-
-		api.HandleResponseErr(res)
-
-		notice := helpers.ToBeColored{Expression: "Toggled Successfully"}
-		notice.StdoutNotice()
 	},
 }
 
