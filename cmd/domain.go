@@ -67,7 +67,7 @@ var create = &cobra.Command{
 		}
 
 		request := api.RequestBag{
-			BodyPayload: map[string]string{"domain": DomainName},
+			BodyPayload: map[string]interface{}{"domain": DomainName},
 			URL:         Config.GetUrl() + "/domains/dns-service",
 			Method:      "POST",
 		}
@@ -196,7 +196,7 @@ var remove = &cobra.Command{
 		}
 
 		request := api.RequestBag{
-			BodyPayload: map[string]string{"id": DomainId},
+			BodyPayload: map[string]interface{}{"id": DomainId},
 			URL:         Config.GetUrl() + "/domains/" + DomainName,
 			Method:      "DELETE",
 		}

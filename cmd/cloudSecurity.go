@@ -105,7 +105,7 @@ var csUpdatePlan = &cobra.Command{
 		}
 
 		request := api.RequestBag{
-			BodyPayload: map[string]string{"plan": cloudSecurityPlan},
+			BodyPayload: map[string]interface{}{"plan": cloudSecurityPlan},
 			URL:    Config.GetUrl() + "/domains/" + DomainName + "/security-service/plan",
 			Method: "PUT",
 		}

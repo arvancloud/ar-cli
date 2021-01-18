@@ -257,7 +257,7 @@ var triggerWebHook = &cobra.Command{
 		}
 
 		request := api.RequestBag{
-			BodyPayload: map[string]string{
+			BodyPayload: map[string]interface{}{
 				"event": eventToTrigger,
 			},
 			URL:    Config.GetUrl() + "/domains/" + DomainName + "/apps/" + cdnId + "/actions/trigger_webhook",
