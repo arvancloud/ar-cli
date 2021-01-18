@@ -19,7 +19,7 @@ var potentialErrMessages = map[int]string{
 }
 
 type RequestBag struct {
-	BodyPayload map[string]string
+	BodyPayload map[string]interface{}
 	URLQueries  map[string]string
 	URL         string
 	Method      string
