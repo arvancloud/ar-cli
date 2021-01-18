@@ -2,6 +2,7 @@ package validator
 
 import (
 	"errors"
+	"net"
 	"regexp"
 	"sort"
 	"strings"
@@ -33,5 +34,13 @@ func IsDomain(domain string) (bool, error) {
 	if !validApiKey.MatchString(domain) {
 		return false, errors.New("domain name should be in format: 'example.com'")
 	}
+	return true, nil
+}
+
+func IsValidIp(ip string) (bool, error) {
+	if net.ParseIP(ip) != nil {
+		return false, errors.New("not a valid IP address")
+	}
+
 	return true, nil
 }
