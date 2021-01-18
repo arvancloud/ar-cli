@@ -2,9 +2,11 @@ package validator
 
 import (
 	"errors"
+	"fmt"
 	"net"
 	"regexp"
 	"sort"
+	"strconv"
 	"strings"
 )
 
@@ -19,6 +21,19 @@ func HasString(searchTerm string, keys []string) (bool, error) {
 	}
 
 	return  false, errors.New(searchTerm + " Is Illegal. Value should be one of " + strings.Join(keys,", "))
+}
+
+func HasInt(searchTerm int, keys []int) (bool, error) {
+	sort.Ints(keys)
+	i := sort.SearchInts(keys, searchTerm)
+
+	ok := i < searchTerm && keys[i] == searchTerm
+
+	if ok {
+		return true, nil
+	}
+
+	return  false, errors.New(strconv.Itoa(searchTerm) + " Is Illegal. Value should be one of " + strings.Trim(strings.Replace(fmt.Sprint(keys), " ", ", ", -1), "[]"))
 }
 
 func IsApiKey(apiKey string) (bool, error) {
