@@ -21,6 +21,8 @@
     ·
     <a href="https://github.com/ebrahimahmadi/ar-cli/issues/new">Report Bug</a>
     ·
+    <a href="https://github.com/ebrahimahmadi/ar-cli/milestones">Milestones</a>
+    .
     <a href="https://github.com/ebrahimahmadi/ar-cli/issues/new">Request Feature</a>
   </p>
 </p>
@@ -151,19 +153,18 @@ To start interacting with domains run
    ```sh
     ar-cli dns [record-type] [command-to-execute] [relavent-flags]
    ```
-
   available record types:
-   - a-record
-   - aaaa-record
-   - mx-record
-   - ns-record
-   - srv-record
-   - txt-record
-   - spf-record
-   - dkim-record
-   - aname-record
-   - cname-record
-   - ptr-record
+   - [x] a-record
+   - [ ] aaaa-record
+   - [ ] mx-record
+   - [ ] ns-record
+   - [ ] srv-record
+   - [ ] txt-record
+   - [ ] spf-record
+   - [ ] dkim-record
+   - [ ] aname-record
+   - [ ] cname-record
+   - [ ] ptr-record
 
 | Command  | Desc | Example 
 |---|---|---
@@ -174,7 +175,7 @@ To start interacting with domains run
 
 See the [open issues](https://github.com/ebrahimahmadi/ar-cli/issues) for a list of proposed features (and known issues).
 
-But general feature under develops are :
+But general feature under developments are :
 CDN-accelration
 CDN-firewall
 CDN-cache
