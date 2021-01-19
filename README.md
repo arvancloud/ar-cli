@@ -62,7 +62,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://drive.google.com/file/d/1uS6r6udhcvMOLe_28Gsk1RHRP9slOq3J/view?usp=sharing)
+[![ar-cli Screen Shot][product-screenshot]](https://github.com/ebrahimahmadi/ar-cli/blob/main/demo.gif)
 
 This package provides a unified command line interface to Arvan CDN Services.
 
