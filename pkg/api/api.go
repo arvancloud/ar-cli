@@ -19,21 +19,25 @@ var potentialErrMessages = map[int]string{
 }
 
 type RequestBag struct {
-	BodyPayload map[string]string
+	BodyPayload map[string]interface{}
+	FormattedBodyPayload []byte
 	URLQueries  map[string]string
 	URL         string
 	Method      string
 }
 
-type Test struct {
-	Id string `json:"id"`
-}
-
 func (r *RequestBag) Do() (*http.Response, error) {
-	body, err := json.Marshal(r.BodyPayload)
+	var body []byte
+	var jsonErr error
 
-	if err != nil {
-		return nil, err
+	if r.BodyPayload != nil {
+		body, jsonErr = json.Marshal(r.BodyPayload)
+	}else {
+		body = r.FormattedBodyPayload
+	}
+
+	if jsonErr != nil {
+		return nil, jsonErr
 	}
 
 	req, err := http.NewRequest(r.Method, r.URL, bytes.NewBuffer(body))
