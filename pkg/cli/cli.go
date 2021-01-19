@@ -3,6 +3,7 @@ package cli
 import (
 	"fmt"
 	"github.com/masihyeganeh/ar-cli/pkg/dns"
+	"github.com/masihyeganeh/ar-cli/pkg/dnssec"
 	"github.com/masihyeganeh/ar-cli/pkg/utl"
 	"github.com/spf13/cobra"
 	"os"
@@ -50,6 +51,9 @@ func NewCommandCLI() *cobra.Command {
 
 	dnsCommand := dns.NewCmdDns(in, out, errout)
 	cmd.AddCommand(dnsCommand)
+
+	dnsSecCommand := dnssec.NewCmdDnsSec(in, out, errout)
+	cmd.AddCommand(dnsSecCommand)
 
 	return cmd
 }

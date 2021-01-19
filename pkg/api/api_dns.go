@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"github.com/antihax/optional"
 	"github.com/masihyeganeh/ar-cli/pkg/api/models"
+	"github.com/masihyeganeh/ar-cli/pkg/api/responses"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -131,7 +132,7 @@ func (a *DNSApiService) DnsRecordsCloud(ctx context.Context, domain string, id s
 			return localVarReturnValue, localVarHttpResponse, newErr
 		}
 		if localVarHttpResponse.StatusCode == 401 {
-			var v models.InlineResponse401
+			var v responses.InlineResponse401
 			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -141,7 +142,7 @@ func (a *DNSApiService) DnsRecordsCloud(ctx context.Context, domain string, id s
 			return localVarReturnValue, localVarHttpResponse, newErr
 		}
 		if localVarHttpResponse.StatusCode == 404 {
-			var v models.InlineResponse404
+			var v responses.InlineResponse404
 			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -151,7 +152,7 @@ func (a *DNSApiService) DnsRecordsCloud(ctx context.Context, domain string, id s
 			return localVarReturnValue, localVarHttpResponse, newErr
 		}
 		if localVarHttpResponse.StatusCode == 422 {
-			var v models.InlineResponse422
+			var v responses.InlineResponse422
 			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -272,7 +273,7 @@ func (a *DNSApiService) DnsRecordsCreate(ctx context.Context, domain string, loc
 			return localVarReturnValue, localVarHttpResponse, newErr
 		}
 		if localVarHttpResponse.StatusCode == 401 {
-			var v models.InlineResponse401
+			var v responses.InlineResponse401
 			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -282,7 +283,7 @@ func (a *DNSApiService) DnsRecordsCreate(ctx context.Context, domain string, loc
 			return localVarReturnValue, localVarHttpResponse, newErr
 		}
 		if localVarHttpResponse.StatusCode == 404 {
-			var v models.InlineResponse404
+			var v responses.InlineResponse404
 			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -292,7 +293,7 @@ func (a *DNSApiService) DnsRecordsCreate(ctx context.Context, domain string, loc
 			return localVarReturnValue, localVarHttpResponse, newErr
 		}
 		if localVarHttpResponse.StatusCode == 422 {
-			var v models.InlineResponse422
+			var v responses.InlineResponse422
 			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -514,7 +515,7 @@ func (a *DNSApiService) DnsRecordsInfo(ctx context.Context, domain string, id st
 			return localVarReturnValue, localVarHttpResponse, newErr
 		}
 		if localVarHttpResponse.StatusCode == 401 {
-			var v models.InlineResponse401
+			var v responses.InlineResponse401
 			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -524,7 +525,7 @@ func (a *DNSApiService) DnsRecordsInfo(ctx context.Context, domain string, id st
 			return localVarReturnValue, localVarHttpResponse, newErr
 		}
 		if localVarHttpResponse.StatusCode == 404 {
-			var v models.InlineResponse404
+			var v responses.InlineResponse404
 			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -652,7 +653,7 @@ func (a *DNSApiService) DnsRecordsList(ctx context.Context, domain string, local
 			return localVarReturnValue, localVarHttpResponse, newErr
 		}
 		if localVarHttpResponse.StatusCode == 401 {
-			var v models.InlineResponse401
+			var v responses.InlineResponse401
 			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -662,7 +663,7 @@ func (a *DNSApiService) DnsRecordsList(ctx context.Context, domain string, local
 			return localVarReturnValue, localVarHttpResponse, newErr
 		}
 		if localVarHttpResponse.StatusCode == 404 {
-			var v models.InlineResponse404
+			var v responses.InlineResponse404
 			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -772,7 +773,7 @@ func (a *DNSApiService) DnsRecordsRemove(ctx context.Context, domain string, id 
 			return localVarReturnValue, localVarHttpResponse, newErr
 		}
 		if localVarHttpResponse.StatusCode == 401 {
-			var v models.InlineResponse401
+			var v responses.InlineResponse401
 			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -782,7 +783,7 @@ func (a *DNSApiService) DnsRecordsRemove(ctx context.Context, domain string, id 
 			return localVarReturnValue, localVarHttpResponse, newErr
 		}
 		if localVarHttpResponse.StatusCode == 404 {
-			var v models.InlineResponse404
+			var v responses.InlineResponse404
 			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -905,7 +906,7 @@ func (a *DNSApiService) DnsRecordsUpdate(ctx context.Context, domain string, id 
 			return localVarReturnValue, localVarHttpResponse, newErr
 		}
 		if localVarHttpResponse.StatusCode == 401 {
-			var v models.InlineResponse401
+			var v responses.InlineResponse401
 			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -915,7 +916,7 @@ func (a *DNSApiService) DnsRecordsUpdate(ctx context.Context, domain string, id 
 			return localVarReturnValue, localVarHttpResponse, newErr
 		}
 		if localVarHttpResponse.StatusCode == 404 {
-			var v models.InlineResponse404
+			var v responses.InlineResponse404
 			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -925,7 +926,7 @@ func (a *DNSApiService) DnsRecordsUpdate(ctx context.Context, domain string, id 
 			return localVarReturnValue, localVarHttpResponse, newErr
 		}
 		if localVarHttpResponse.StatusCode == 422 {
-			var v models.InlineResponse422
+			var v responses.InlineResponse422
 			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()

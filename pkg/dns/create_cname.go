@@ -72,9 +72,9 @@ func NewCmdDnsCreateCName(in io.Reader, out, errout io.Writer) *cobra.Command {
 				Body: optional.NewInterface(record),
 			}
 			res, _, err := api.GetAPIClient().DNSApi.DnsRecordsCreate(c.Context(), domain, options)
-			utl.CheckErr(err)
+			utl.CheckApiErr(err)
 
-			fmt.Fprintf(explainOut, "%v\n", res.Data)
+			fmt.Fprintf(explainOut, "%v\n", res.Message)
 		},
 	}
 

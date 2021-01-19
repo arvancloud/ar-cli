@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"github.com/antihax/optional"
 	"github.com/masihyeganeh/ar-cli/pkg/api/models"
+	"github.com/masihyeganeh/ar-cli/pkg/api/responses"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -113,7 +114,7 @@ func (a *CdnAppApiService) AppsIndex(ctx context.Context) (models.AppsIndexApiRe
 			return localVarReturnValue, localVarHttpResponse, newErr
 		}
 		if localVarHttpResponse.StatusCode == 401 {
-			var v models.InlineResponse401
+			var v responses.InlineResponse401
 			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -221,7 +222,7 @@ func (a *CdnAppApiService) AppsShow(ctx context.Context, id string) (models.CdnA
 			return localVarReturnValue, localVarHttpResponse, newErr
 		}
 		if localVarHttpResponse.StatusCode == 401 {
-			var v models.InlineResponse401
+			var v responses.InlineResponse401
 			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -231,7 +232,7 @@ func (a *CdnAppApiService) AppsShow(ctx context.Context, id string) (models.CdnA
 			return localVarReturnValue, localVarHttpResponse, newErr
 		}
 		if localVarHttpResponse.StatusCode == 404 {
-			var v models.InlineResponse404
+			var v responses.InlineResponse404
 			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -354,7 +355,7 @@ func (a *CdnAppApiService) DomainsAppsActionTriggerWebhook(ctx context.Context, 
 			return localVarReturnValue, localVarHttpResponse, newErr
 		}
 		if localVarHttpResponse.StatusCode == 401 {
-			var v models.InlineResponse401
+			var v responses.InlineResponse401
 			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -364,7 +365,7 @@ func (a *CdnAppApiService) DomainsAppsActionTriggerWebhook(ctx context.Context, 
 			return localVarReturnValue, localVarHttpResponse, newErr
 		}
 		if localVarHttpResponse.StatusCode == 404 {
-			var v models.InlineResponse404
+			var v responses.InlineResponse404
 			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -374,7 +375,7 @@ func (a *CdnAppApiService) DomainsAppsActionTriggerWebhook(ctx context.Context, 
 			return localVarReturnValue, localVarHttpResponse, newErr
 		}
 		if localVarHttpResponse.StatusCode == 422 {
-			var v models.InlineResponse422
+			var v responses.InlineResponse422
 			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -484,7 +485,7 @@ func (a *CdnAppApiService) DomainsAppsDelete(ctx context.Context, domain string,
 			return localVarReturnValue, localVarHttpResponse, newErr
 		}
 		if localVarHttpResponse.StatusCode == 401 {
-			var v models.InlineResponse401
+			var v responses.InlineResponse401
 			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -494,7 +495,7 @@ func (a *CdnAppApiService) DomainsAppsDelete(ctx context.Context, domain string,
 			return localVarReturnValue, localVarHttpResponse, newErr
 		}
 		if localVarHttpResponse.StatusCode == 404 {
-			var v models.InlineResponse404
+			var v responses.InlineResponse404
 			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -715,7 +716,7 @@ func (a *CdnAppApiService) DomainsAppsStore(ctx context.Context, domain string, 
 			return localVarReturnValue, localVarHttpResponse, newErr
 		}
 		if localVarHttpResponse.StatusCode == 401 {
-			var v models.InlineResponse401
+			var v responses.InlineResponse401
 			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -725,7 +726,7 @@ func (a *CdnAppApiService) DomainsAppsStore(ctx context.Context, domain string, 
 			return localVarReturnValue, localVarHttpResponse, newErr
 		}
 		if localVarHttpResponse.StatusCode == 404 {
-			var v models.InlineResponse404
+			var v responses.InlineResponse404
 			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -735,7 +736,7 @@ func (a *CdnAppApiService) DomainsAppsStore(ctx context.Context, domain string, 
 			return localVarReturnValue, localVarHttpResponse, newErr
 		}
 		if localVarHttpResponse.StatusCode == 422 {
-			var v models.InlineResponse422
+			var v responses.InlineResponse422
 			err = a.client.decode(&v, localVarBody, localVarHttpResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()

@@ -8,6 +8,7 @@ import (
 	"github.com/spf13/cobra"
 	"io"
 	"os"
+	"time"
 
 	"github.com/masihyeganeh/ar-cli/pkg/api"
 	"github.com/masihyeganeh/ar-cli/pkg/utl"
@@ -82,9 +83,14 @@ func NewCmdDnsList(in io.Reader, out, errout io.Writer) *cobra.Command {
 			}
 
 			res, _, err := api.GetAPIClient().DNSApi.DnsRecordsList(c.Context(), domain, options)
-			utl.CheckErr(err)
+			utl.CheckApiErr(err)
 
-			fmt.Fprintf(explainOut, "%v\n", res.Data)
+			fmt.Fprint(explainOut, "ID\tType\tTitle\tValue\tTTL\tStatus\n")
+			for _, record := range res.Data {
+				fmt.Fprintf(explainOut, "%s\t%s\t%s\t%s\t%s\t%t\n", record.Id, record.Type, record.Name, record.ValueString(), (time.Duration(record.Ttl) * time.Second).String(), record.Cloud)
+			}
+
+			fmt.Fprintf(explainOut, "\nShowing page %d of %d\n", res.Meta.CurrentPage, res.Meta.LastPage)
 		},
 	}
 
@@ -213,9 +219,9 @@ func NewCmdDnsRemove(in io.Reader, out, errout io.Writer) *cobra.Command {
 			id := args[1]
 
 			res, _, err := api.GetAPIClient().DNSApi.DnsRecordsRemove(c.Context(), domain, id)
-			utl.CheckErr(err)
+			utl.CheckApiErr(err)
 
-			fmt.Fprintf(explainOut, "%v\n", res.Data)
+			fmt.Fprintf(explainOut, "%s\n", res.Message)
 		},
 	}
 
@@ -247,9 +253,9 @@ func NewCmdDnsToggleCloud(in io.Reader, out, errout io.Writer) *cobra.Command {
 			}
 
 			res, _, err := api.GetAPIClient().DNSApi.DnsRecordsCloud(c.Context(), domain, id, options)
-			utl.CheckErr(err)
+			utl.CheckApiErr(err)
 
-			fmt.Fprintf(explainOut, "%v\n", res.Data)
+			fmt.Fprintf(explainOut, "%s\n", res.Message)
 		},
 	}
 
@@ -288,9 +294,9 @@ func NewCmdDnsImport(in io.Reader, out, errout io.Writer) *cobra.Command {
 			defer file.Close()
 
 			res, _, err := api.GetAPIClient().DNSApi.DnsRecordsImport(c.Context(), domain, options)
-			utl.CheckErr(err)
+			utl.CheckApiErr(err)
 
-			fmt.Fprintf(explainOut, "%v\n", res.Data)
+			fmt.Fprintf(explainOut, "%s\n", res.Message)
 		},
 	}
 

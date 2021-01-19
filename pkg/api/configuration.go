@@ -55,9 +55,14 @@ type Configuration struct {
 }
 
 func NewConfiguration() *Configuration {
+	conf := config.GetConfigInfo()
+	server := conf.GetServer()
+	if len(server) == 0 {
+		server = "https://napi.arvancloud.com"
+	}
 	cfg := &Configuration{
-		BasePath:      "https://napi.arvancloud.com/cdn/4.0",
-		DefaultHeader: map[string]string{"Authorization": config.GetConfigInfo().GetApiKey()},
+		BasePath:      server + "/cdn/4.0",
+		DefaultHeader: map[string]string{"Authorization": conf.GetApiKey()},
 		UserAgent:     "ar-cli/0.0.1",
 	}
 	return cfg

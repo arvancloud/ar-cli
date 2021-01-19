@@ -2,7 +2,11 @@ package utl
 
 import (
 	"bufio"
+	"encoding/json"
+	"errors"
 	"fmt"
+	apiErrors "github.com/masihyeganeh/ar-cli/pkg/api/errors"
+	"github.com/masihyeganeh/ar-cli/pkg/api/responses"
 	"io"
 	"log"
 	"os"
@@ -25,6 +29,23 @@ func fatalErrHandler(msg string, code int) {
 		fmt.Fprint(os.Stderr, msg)
 	}
 	os.Exit(code)
+}
+
+// CheckErr prints a user friendly error to STDERR and exits with a non-zero
+// exit code when an api error happens.
+func CheckApiErr(err error) {
+	if err != nil {
+		errMsg := err.Error()
+		if err, ok := err.(apiErrors.GenericApiCallError); ok {
+			if err, ok := err.Model().(responses.InlineResponse422); ok {
+				errMsg += "\n\n" + err.Message
+				for field, errorDetails := range err.Errors {
+					errMsg += fmt.Sprintf("\n%s: %s", field, strings.Join(errorDetails, ", "))
+				}
+			}
+		}
+		CheckErr(errors.New(errMsg))
+	}
 }
 
 // CheckErr prints a user friendly error to STDERR and exits with a non-zero
@@ -73,4 +94,16 @@ func ReadInput(inputExplain, defaultVal string, out io.Writer, in io.Reader, val
 			}
 		}
 	}
+}
+
+// EncodeInner tries to encode one of non-empty inner parts of a struct as a workaround for stupid Go bug
+func EncodeInner(inners ...interface{}) ([]byte, error) {
+	var result []byte
+	var err error
+	for _, inner := range inners {
+		if result, err = json.Marshal(inner); err == nil && len(result) > 2 {
+			return result, err
+		}
+	}
+	return []byte("{}"), nil
 }

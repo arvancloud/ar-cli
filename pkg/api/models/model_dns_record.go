@@ -25,3 +25,32 @@ type DnsRecord struct {
 	CreatedAt   time.Time `json:"created_at,omitempty"`
 	UpdatedAt   time.Time `json:"updated_at,omitempty"`
 }
+
+func (d *DnsRecord) ValueString() string {
+	switch d.Type {
+	case "a":
+		return d.Value.ARecord.Ip
+	case "aaaa":
+		return d.Value.AaaaRecord.Ip
+	case "ns":
+		return d.Value.NsRecord.Host
+	case "txt":
+		return d.Value.TxtRecord.Text
+	case "cname":
+		return d.Value.CnameRecord.Host
+	case "mx":
+		return d.Value.MxRecord.Host
+	case "srv":
+		return d.Value.SrvRecord.Target
+	case "spf":
+		return d.Value.SpfRecord.Text
+	case "dkim":
+		return d.Value.DkimRecord.Text
+	case "aname":
+		return d.Value.AnameRecord.Location
+	case "ptr":
+		return d.Value.PtrRecord.Domain
+	default:
+		return ""
+	}
+}
