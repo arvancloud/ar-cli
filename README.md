@@ -46,11 +46,10 @@
     <li><a href="#usage">Usage</a></li>
     <li><a href="#cmd">Commands</a>
       <ul>
-        <li><a href="#DNS">DNS</a></li>  
-        <li><a href="#CDN">CDN</a></li>  
-        <li><a href="#domain">Domain</a></li>  
         <li><a href="#auth">Auth</a></li>  
-        <li><a href="#CS">Cloud Security</a></li>
+        <li><a href="#domain">Domain</a></li>  
+        <li><a href="#cloud-security">Cloud Security</a></li>
+        <li><a href="#dns">DNS</a></li>  
       </ul>
     </li>        
     <li><a href="#roadmap">Roadmap</a></li>
@@ -62,7 +61,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![ar-cli Screen Shot][product-screenshot]](https://github.com/ebrahimahmadi/ar-cli/blob/main/demo.gif)
+[![Product Name Screen Shot][product-screenshot]](https://example.com)
 
 This package provides a unified command line interface to Arvan CDN Services.
 
@@ -98,7 +97,7 @@ To get a local copy up and running follow these simple example steps.
 
 
 <!-- Domain -->
-## Playing with the Domain
+## Domain
 The domain command will enable you to have interaction with domains tied with your account.
 
 To start interacting with domains run 
@@ -116,13 +115,73 @@ To start interacting with domains run
 |check| send a request to Arvan to recheck your NS. Also will report the status of ns|```ar-cli domain check --name arvancloud.com```
 
 
-<!-- USAGE EXAMPLES -->
-## Usage Examples
+<!-- Cloud Security -->
+## Cloud security
+The domain command will enable you to get an overview of your cloud-security app and update the subscription plan.
+
+To start interacting with domains run 
+   ```sh
+    ar-cli cloud-security [command-to-execute] [relavent-flags]
+   ```
+
+| Command  | Desc | Example 
+|---|---|---
+|  info | Shows the current status of cloud-security service  |   ```ar-cli cloud-security info --name arvancloud.com```
+|  update | Updates your cloud-security service plan. Available subscriptions plans are  bronze, silver, gold, platinum  |   ```ar-cli cloud-security update --name arvancloud.com --plan gold```
+
+## DNS
+
+By using dns command, you can have complete management over DNS services.
+
+To start interacting with domains run 
+   ```sh
+    ar-cli dns [command-to-execute] [relavent-flags]
+   ```
+| Command  | Desc | Example 
+|---|---|---
+|  list | Lists all records that are tied with the given domain with their details  |   ```ar-cli dns list --name arvancloud.com```
+|  info | Show single record details. details consists of: id,type,name,host,cloud status,ttl, upstream http,protection status,IP filter count, geo filter, ip filter order |   ```ar-cli dns info --name arvancloud.com --record-id 65b03b20-3598-4a1b-a467-c6e3a4ec652a```
+|  remove | remove a record tied to the domain  |   ```ar-cli dns remove --name arvancloud.com --record-id 65b03b20-3598-4a1b-a467-c6e3a4ec652a```
+|  toggle | toggles cloud service. if `--cloud` flag is passed to the command the cloud service will be enlabled for the record. in case you want to disable cloud service remove `--cloud` at the end of the command  |   ```ar-cli dns toggle --name arvancloud.com --record-id 65b03b20-3598-4a1b-a467-c6e3a4ec652a --cloud```
+
+### dns create record command
+In order to create a record the syntax will be a little bit different.
+
+To start interacting with domains run 
+   ```sh
+    ar-cli dns [record-type] [command-to-execute] [relavent-flags]
+   ```
+
+  available record types:
+   - a-record
+   - aaaa-record
+   - mx-record
+   - ns-record
+   - srv-record
+   - txt-record
+   - spf-record
+   - dkim-record
+   - aname-record
+   - cname-record
+   - ptr-record
+
+| Command  | Desc | Example 
+|---|---|---
+| craete | created new record with  | ```ar-cli dns create a-record --name arcancloud.com --ttl 120 --ip 192.168.0.1 --ip-filter-order rr --ip-geo-filter country --upstream-https https --ip-filter-count single```
 
 <!-- ROADMAP -->
 ## Roadmap
 
 See the [open issues](https://github.com/ebrahimahmadi/ar-cli/issues) for a list of proposed features (and known issues).
+
+But general feature under develops are :
+CDN-accelration
+CDN-firewall
+CDN-cache
+CDN-https
+CDN-apps
+
+Also in case you have an idea please <a href="https://github.com/ebrahimahmadi/ar-cli/issues/new">Request Feature</a>
 
 <!-- CONTRIBUTING -->
 ## Contributing
@@ -135,6 +194,21 @@ Contributions are what make the open source community such an amazing place to b
 4. Push to the Branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
+### Commit conventions
+We follow [conventional-commit](https://www.conventionalcommits.org/) to make our track easier and 
+better to review.
+
+acceptable scopes for commits are:
+
+1. core
+2. validator
+3. api
+4. cdn-segment
+5. dns-segment
+6. cs-segment
+7. domain-segment
+8. auth-segment
+9. configuaration
 
 <!-- CONTACT -->
 ## Contact
@@ -149,4 +223,4 @@ Project Link: [Arvan Cli](https://github.com/ebrahimahmadi/ar-cli)
 [stars-url]: https://github.com/ebrahimahmadi/ar-cli/stargazers
 [issues-shield]: https://img.shields.io/bitbucket/issues-raw/ebrahimahmadi/ar-cli
 [issues-url]: https://github.com/othneildrew/Best-README-Template/issues
-[product-screenshot]: images/screenshot.png
+[product-screenshot]: demo.gif
