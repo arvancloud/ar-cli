@@ -133,7 +133,10 @@ func init() {
 	cloudSecurityCmd.AddCommand(csUpdatePlan)
 
 	csServicesStatus.Flags().StringVarP(&DomainName, "name", "n", "", helpDescriptions["domain-name"])
+	csServicesStatus.MarkFlagRequired("name")
 
 	csUpdatePlan.Flags().StringVarP(&cloudSecurityPlan, "plan", "p", "", helpDescriptions["cs-plan"])
 	csUpdatePlan.Flags().StringVarP(&DomainName, "name", "n", "", helpDescriptions["domain-name"])
+	csUpdatePlan.MarkFlagRequired("name")
+	csUpdatePlan.MarkFlagRequired("plan")
 }
