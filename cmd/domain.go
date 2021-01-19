@@ -320,9 +320,15 @@ func init() {
 
 	search.Flags().StringVarP(&searchKeyWord, "key-word", "k", "", helpDescriptions["domain-search-key-word"])
 	create.Flags().StringVarP(&DomainName, "name", "n", "", helpDescriptions["domain-name"])
+	create.MarkFlagRequired("name")
 	info.Flags().StringVarP(&DomainName, "name", "n", "", helpDescriptions["domain-name"])
+	info.MarkFlagRequired("name")
 	remove.Flags().StringVarP(&DomainName, "name", "n", "", helpDescriptions["domain-name"])
 	remove.Flags().StringVarP(&DomainId, "id", "i", "", helpDescriptions["domain-id"])
+	remove.MarkFlagRequired("name")
+	remove.MarkFlagRequired("id")
 	nsRecords.Flags().StringVarP(&DomainName, "name", "n", "", helpDescriptions["domain-name"])
+	nsRecords.MarkFlagRequired("name")
 	check.Flags().StringVarP(&DomainName, "name", "n", "", helpDescriptions["domain-name"])
+	check.MarkFlagRequired("name")
 }
