@@ -3,6 +3,7 @@ package cmd
 import (
 	"encoding/json"
 	"github.com/ebrahimahmadi/ar-cli/pkg/api"
+	"github.com/ebrahimahmadi/ar-cli/pkg/factories/dns_records"
 	"github.com/ebrahimahmadi/ar-cli/pkg/helpers"
 	"github.com/ebrahimahmadi/ar-cli/pkg/validator"
 	"io/ioutil"
@@ -42,6 +43,14 @@ var ipV4 string
 var port int
 var country string
 var weight int
+var ttl int
+var recordName string
+var upstreamHttps string
+var ipFilterCount string
+var ipFilterOrder string
+var ipGeoFilter string
+var isRecordServedOnCloud bool
+var dnsRecordId string
 
 var dnsCmd = &cobra.Command{
 	Use:   "dns",
@@ -50,9 +59,6 @@ var dnsCmd = &cobra.Command{
 		cmd.Help()
 	},
 }
-
-var isRecordServedOnCloud bool
-var dnsRecordId string
 
 var dnsList = &cobra.Command{
 	Use:   "list",
@@ -208,7 +214,7 @@ var dnsToggle = &cobra.Command{
 
 		request := api.RequestBag{
 			BodyPayload: map[string]interface{}{
-				"cloud": strconv.FormatBool(isRecordServedOnCloud),
+				"cloud": isRecordServedOnCloud,
 			},
 			URL:    Config.GetUrl() + "/domains/" + DomainName + "/dns-records/" + dnsRecordId + "/cloud",
 			Method: "PUT",
@@ -243,6 +249,7 @@ var aRecord = &cobra.Command{
 	Use:   "a-record",
 	Short: "Create A type DNS record ",
 	Run: func(cmd *cobra.Command, args []string) {
+
 		if validDomain, validationErr := validator.IsDomain(DomainName); !validDomain {
 			err := helpers.ToBeColored{Expression: validationErr.Error()}
 			err.StdoutError().StopExecution()
@@ -252,6 +259,46 @@ var aRecord = &cobra.Command{
 			err := helpers.ToBeColored{Expression: ipValidationErr.Error()}
 			err.StdoutError().StopExecution()
 		}
+
+		record := dns_records.ARecord{
+			TTL:           ttl,
+			Name:          recordName,
+			Cloud:         isRecordServedOnCloud,
+			UpstreamHttps: upstreamHttps,
+			Value: []dns_records.Value{
+				{
+					IP: ipV4,
+					Country: country,
+					Port: port,
+					Weight: weight,
+				},
+			},
+			IpFilterMode: dns_records.IpFilterMode{
+				Count:     ipFilterCount,
+				Order:     ipFilterOrder,
+				GeoFilter: ipGeoFilter,
+			},
+		}
+
+		body, err := record.Build()
+
+		if err != nil {
+			err := helpers.ToBeColored{Expression: err.Error()}
+			err.StdoutError().StopExecution()
+		}
+
+		req := api.RequestBag{
+			FormattedBodyPayload: body,
+			URL:         Config.GetUrl() + "/domains/" + DomainName + "/dns-records",
+			Method:      "POST",
+		}
+
+		res, err := req.Do()
+
+		api.HandleResponseErr(res)
+
+		notice := helpers.ToBeColored{Expression: "Created Successfully"}
+		notice.StdoutNotice()
 	},
 }
 
@@ -279,17 +326,29 @@ func init() {
 
 	dnsToggle.Flags().StringVarP(&DomainName, "name", "n", "", helpDescriptions["domain-name"])
 	dnsToggle.Flags().StringVarP(&dnsRecordId, "record-id", "r", "", helpDescriptions["dns-record-id"])
-	dnsToggle.Flags().BoolVarP(&isRecordServedOnCloud, "cloud", "c", false, helpDescriptions["dns-record-cloud"])
+	dnsToggle.Flags().BoolVarP(&isRecordServedOnCloud, "cloud", "c", true, helpDescriptions["dns-record-cloud"])
 	dnsToggle.MarkFlagRequired("name")
 	dnsToggle.MarkFlagRequired("record-id")
-	dnsToggle.MarkFlagRequired("cloud")
 
-	aRecord.Flags().StringVarP(&DomainName, "name", "n", "", helpDescriptions["domain-name"])
+	aRecord.Flags().StringVarP(&DomainName, "domain", "d", "", helpDescriptions["domain-name"])
+	aRecord.Flags().StringVarP(&recordName, "name", "n", "", helpDescriptions["dns-record-name"])
 	aRecord.Flags().StringVarP(&ipV4, "ip", "i", "", helpDescriptions["dns-ip"])
 	aRecord.Flags().IntVarP(&port, "port", "p", 0, helpDescriptions["dns-port"])
-	aRecord.Flags().IntVarP(&weight, "weight", "w", 0, helpDescriptions["dns-port"])
-	aRecord.Flags().StringVarP(&country, "country", "c", "", helpDescriptions["dns-port"])
+	aRecord.Flags().IntVarP(&weight, "weight", "w", 0, helpDescriptions["dns-weight"])
+	aRecord.Flags().IntVarP(&ttl, "ttl", "t", 120, helpDescriptions["dns-ttl"])
+	aRecord.Flags().BoolVarP(&isRecordServedOnCloud, "cloud", "l", false, helpDescriptions["dns-record-cloud"])
+	aRecord.Flags().StringVarP(&country, "country", "c", "", helpDescriptions["dns-country"])
+	aRecord.Flags().StringVarP(&ipFilterCount, "ip-filter-count", "f", "", helpDescriptions["dns-filter-count"])
+	aRecord.Flags().StringVarP(&ipFilterOrder, "ip-filter-order", "o", "", helpDescriptions["dns-filter-order"])
+	aRecord.Flags().StringVarP(&ipGeoFilter, "ip-geo-filter", "g", "", helpDescriptions["dns-geo-filter"])
+	aRecord.Flags().StringVarP(&upstreamHttps, "upstream-https", "u", "default", helpDescriptions["dns-upstream-httpa"])
 	aRecord.MarkFlagRequired("ip")
+	aRecord.MarkFlagRequired("domain-name")
+	aRecord.MarkFlagRequired("upstream-https")
 	aRecord.MarkFlagRequired("name")
+	aRecord.MarkFlagRequired("ttl")
+	aRecord.MarkFlagRequired("ip-filter-count")
+	aRecord.MarkFlagRequired("ip-filter-order")
+	aRecord.MarkFlagRequired("ip-geo-filter")
 
 }
