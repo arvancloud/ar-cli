@@ -53,7 +53,7 @@ func IsDomain(domain string) (bool, error) {
 }
 
 func IsValidIp(ip string) (bool, error) {
-	if net.ParseIP(ip) != nil {
+	if net.ParseIP(ip) == nil {
 		return false, errors.New("not a valid IP address")
 	}
 
