@@ -1,9 +1,6 @@
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
-[![LinkedIn][linkedin-shield]][linkedin-url]
-
-
 
 <!-- PROJECT LOGO -->
 <br />
@@ -43,7 +40,6 @@
     <li>
       <a href="#getting-started">Getting Started</a>
       <ul>
-        <li><a href="#prerequisites">Prerequisites</a></li>
         <li><a href="#installation">Installation</a></li>
       </ul>
     </li>
@@ -63,12 +59,10 @@
   </ol>
 </details>
 
-
-
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-<!-- [![Product Name Screen Shot][product-screenshot]](https://example.com) -->
+[![Product Name Screen Shot][product-screenshot]](https://drive.google.com/file/d/1uS6r6udhcvMOLe_28Gsk1RHRP9slOq3J/view?usp=sharing)
 
 This package provides a unified command line interface to Arvan CDN Services.
 
@@ -79,20 +73,11 @@ This section should list any major frameworks that you built your project using.
 * [Go](https://golang.org/)
 * [Cobra](https://github.com/spf13/cobra)
 
-
 <!-- GETTING STARTED -->
 ## Getting Started
 
 This is an example of how you may give instructions on setting up your project locally.
 To get a local copy up and running follow these simple example steps.
-
-### Prerequisites
-
-This is an example of how to list things you need to use the software and how to install them.
-* npm
-  ```sh
-  npm install npm@latest -g
-  ```
 
 ### Installation
 
@@ -111,20 +96,33 @@ This is an example of how to list things you need to use the software and how to
    ```
    If you are succssufully authenticated, you will see `Configuration saved successfully` message.
 
+
+<!-- Domain -->
+## Playing with the Domain
+The domain command will enable you to have interaction with domains tied with your account.
+
+To start interacting with domains run 
+   ```sh
+    ar-cli domain [command-to-execute] [relavent-flags]
+   ```
+
+| Command  | Desc | Example 
+|---|---|---
+|  search | serach for a domain by given key-word. if the key-word is not passed it will list all domains  |   ```ar-cli domain search --key-word arvan```
+|  info | will retreive data for an specific record and parse the data in a table  |   ```ar-cli domain info --name arvancloud.com```
+| remove  | will remove given domain | ```ar-cli domain remove --name arvancloud.com --id 3541b0ce-e8a6-42f0-b65a-f03a7c387486```
+|ns-records|fetch and show ns-keys and ns-domains of the given domain| ```ar-cli domain ns-records --name arvancloud.com```
+|create| create given domain name| ```ar-cli domain create --name hello.com```
+|check| send a request to Arvan to recheck your NS. Also will report the status of ns|```ar-cli domain check --name arvancloud.com```
+
+
 <!-- USAGE EXAMPLES -->
-## Usage
-
-Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
-
-<!-- DNS -->
-## DNS commands and flags
-DNS SEction
+## Usage Examples
 
 <!-- ROADMAP -->
 ## Roadmap
 
 See the [open issues](https://github.com/ebrahimahmadi/ar-cli/issues) for a list of proposed features (and known issues).
-
 
 <!-- CONTRIBUTING -->
 ## Contributing
@@ -151,6 +149,4 @@ Project Link: [Arvan Cli](https://github.com/ebrahimahmadi/ar-cli)
 [stars-url]: https://github.com/ebrahimahmadi/ar-cli/stargazers
 [issues-shield]: https://img.shields.io/bitbucket/issues-raw/ebrahimahmadi/ar-cli
 [issues-url]: https://github.com/othneildrew/Best-README-Template/issues
-[linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
-[linkedin-url]: https://www.linkedin.com/in/ebiahmadi
 [product-screenshot]: images/screenshot.png
