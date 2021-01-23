@@ -11,27 +11,27 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-    - name: Generate bin file
-      uses: actions/setup-go@v2
-      with:
-        go-version: 1.15
+      - name: Generate bin file
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.15
 
-    - name: Build
-      run: |
-      remote_repo="https://${GITHUB_ACTOR}:${{ secrets.WRITE_ACCESS }}@github.com/arvan-cli.git"
-      git config http.sslVerify true
-      git config user.name "ebrahimahmadi"
-      git config user.email "eahmadi641@gmail.com"
-      git remote add publisher "${remote_repo}"
-      git show-ref
-      git branch --verbose
-      git lfs install
-      git checkout main
-      go build -v ./...
-      git add .
-      timestamp=$(date -u)
-      git commit -m "feat(bin) auto publish bin files. ${timestamp} ${GITHUB_SHA}" || exit 0
-      git pull --rebase publisher main
-      git push publisher main
+      - name: Build
+        run: |
+          remote_repo="https://${GITHUB_ACTOR}:${{ secrets.WRITE_ACCESS }}@github.com/arvan-cli.git"
+          git config http.sslVerify true
+          git config user.name "ebrahimahmadi"
+          git config user.email "eahmadi641@gmail.com"
+          git remote add publisher "${remote_repo}"
+          git show-ref
+          git branch --verbose
+          git lfs install
+          git checkout main
+          go build -v ./...
+          git add .
+          timestamp=$(date -u)
+          git commit -m "feat(bin) auto publish bin files. ${timestamp} ${GITHUB_SHA}" || exit 0
+          git pull --rebase publisher main
+          git push publisher main
