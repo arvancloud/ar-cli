@@ -29,9 +29,9 @@ jobs:
           git branch --verbose
           git lfs install
           git checkout main
-          go build -v ./...
+          go build
+          mkdir bin
+          mv ar-cli /bin
           git add .
           timestamp=$(date -u)
           git commit -m "feat(bin) auto publish bin files. ${timestamp} ${GITHUB_SHA}" || exit 0
-          git pull --rebase publisher main
-          git push publisher main
