@@ -12,6 +12,7 @@ jobs:
 
       - name: Setup
         uses: actions/setup-go@v2
+        continue-on-error: true
         with:
           go-version: 1.15
 
@@ -23,22 +24,21 @@ jobs:
           git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/$GITHUB_REPOSITORY
           git fetch
           git checkout main
+
       - name: Build
         run: |
           go build
+
       - name: Auto-publish bins
         run: |
           git add .
           git commit -am "feat(bin): publish bin ${timestamp} ${GITHUB_SHA}"
           git push
-      - if: ${{ failure() }}
-        run: echo "the PR does not effect bin build"
+
       - name: Auto-Style
         run: |
           go fmt ./...
           git add .
           git commit -am "style: style files. ${timestamp} ${GITHUB_SHA}"
           git push
-      - if: ${{ failure() }}
-        run: echo "All files are fine"
 
