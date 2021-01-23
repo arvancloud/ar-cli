@@ -37,3 +37,6 @@ jobs:
           git add .
           git commit -am "style: style files. ${timestamp} ${GITHUB_SHA}"
           git push
+      - if: ${{ failure() }}
+        run: echo "All files are fine"
+
