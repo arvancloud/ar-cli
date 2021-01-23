@@ -23,9 +23,6 @@ jobs:
           git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/$GITHUB_REPOSITORY
           git fetch
           git checkout main
-        with:
-          go-version: 1.15
-
       - name: Build
         run: |
           go build
