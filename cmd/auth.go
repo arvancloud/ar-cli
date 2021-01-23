@@ -1,8 +1,10 @@
 package cmd
 
 import (
-	"fmt"
 	"github.com/ebrahimahmadi/ar-cli/config"
+	"github.com/ebrahimahmadi/ar-cli/pkg/api"
+	"github.com/ebrahimahmadi/ar-cli/pkg/helpers"
+	"github.com/ebrahimahmadi/ar-cli/pkg/validator"
 	"github.com/spf13/cobra"
 )
 
@@ -20,12 +22,34 @@ var authCmd = &cobra.Command{
 	Long:  authDesc,
 	Run: func(cmd *cobra.Command, args []string) {
 		arvanConfig := config.GetConfigInfo()
-		
-		arvanConfig.SetApiKey(ApiKey)
 
-		arvanConfig.SaveConfig()
+		if validKey, err := validator.IsApiKey(ApiKey); !validKey{
+			err := helpers.ToBeColored{Expression: err.Error()}
+			err.StdoutError().StopExecution()
+		}
 
-		fmt.Println("Configuration saved successfully.")
+		if keySet, err := arvanConfig.SetApiKey(ApiKey).SaveConfig(); !keySet{
+			err := helpers.ToBeColored{Expression: err.Error()}
+			err.StdoutError().StopExecution()
+		}
+
+		testKeyReq := api.RequestBag{
+			URL: Config.GetUrl() + "/domains",
+		}
+
+		res, err := testKeyReq.Do()
+
+		if err != nil {
+			err := helpers.ToBeColored{Expression: err.Error()}
+			err.StdoutError().StopExecution()
+		}
+
+		defer res.Body.Close()
+
+		api.HandleResponseErr(res)
+
+		notice := helpers.ToBeColored{Expression: "Configuration saved successfully."}
+		notice.StdoutNotice()
 	},
 }
 

@@ -294,7 +294,14 @@ var aRecord = &cobra.Command{
 			Method:      "POST",
 		}
 
-		res, err := req.Do()
+		res, reqErr := req.Do()
+
+		if reqErr != nil {
+			err := helpers.ToBeColored{Expression: err.Error()}
+			err.StdoutError().StopExecution()
+		}
+
+		defer res.Body.Close()
 
 		api.HandleResponseErr(res)
 
