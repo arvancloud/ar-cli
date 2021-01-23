@@ -17,32 +17,32 @@ var DomainId string
 var Config = config.GetConfigInfo()
 
 var helpDescriptions = map[string]string{
-	"domain-command":   "Create, Search, Delete, Get, Health check and get Ns records ",
+	"domain-command":         "Create, Search, Delete, Get, Health check and get Ns records ",
 	"domain-search":          "Leaving the 'search' flag empty, will return all domains. Otherwise, it will filter domains containing the search keyword.",
 	"domain-search-key-word": "Search Item",
 	"domain-create":          "Create new domain",
 	"domain-info":            "Get information of the domain",
-	"domain-name":     "The host name. like: example.com",
-	"domain-id":       "The domain UUID. like: 3541b0ce-e8a6-42f0-b65a-f03a7c387486",
+	"domain-name":            "The host name. like: example.com",
+	"domain-id":              "The domain UUID. like: 3541b0ce-e8a6-42f0-b65a-f03a7c387486",
 	"domain-remove":          "Remove the domain",
 	"domain-list-ns-records": "Get list of domain's root NS records and expected values",
 	"domain-check":           "Check NS to find whether domain is activated",
 
-	"cs-command": `Get an overview of cloud security services status. Or update your security plans`,
-	"cs-info":  "Get an overview of cloud security services status",
+	"cs-command":     `Get an overview of cloud security services status. Or update your security plans`,
+	"cs-info":        "Get an overview of cloud security services status",
 	"cs-update-plan": "Update your cloud security plan",
-	"cs-plan": "The plan you are wiling to subscribe to. The value should be one of: bronze, silver, gold, platinum",
+	"cs-plan":        "The plan you are wiling to subscribe to. The value should be one of: bronze, silver, gold, platinum",
 
 	"cdnapp-command": "Find, List, Install and Uninstall the application from domain",
-	"cdnapp-list": "List all available CDNs",
-	"cdnapp-info": "get cdn using the given cdn id",
-	"cdnapp-id": "The cdn app UUID you are wiling to receive id",
-	"cdnapp-event": "Event that you want to trigger. The value should be on of: before-new-install, new-install",
+	"cdnapp-list":    "List all available CDNs",
+	"cdnapp-info":    "get cdn using the given cdn id",
+	"cdnapp-id":      "The cdn app UUID you are wiling to receive id",
+	"cdnapp-event":   "Event that you want to trigger. The value should be on of: before-new-install, new-install",
 
-	"dns-record-id": "ID of the DNS record",
+	"dns-record-id":    "ID of the DNS record",
 	"dns-record-cloud": "If is true the cloud status will be served over cloud, otherwise no!",
-	"dns-ip": "Ip Address that should be pointed to",
-	"dns-port": "port ",
+	"dns-ip":           "Ip Address that should be pointed to",
+	"dns-port":         "port ",
 }
 
 var rootCmd = &cobra.Command{

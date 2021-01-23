@@ -23,12 +23,12 @@ var authCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		arvanConfig := config.GetConfigInfo()
 
-		if validKey, err := validator.IsApiKey(ApiKey); !validKey{
+		if validKey, err := validator.IsApiKey(ApiKey); !validKey {
 			err := helpers.ToBeColored{Expression: err.Error()}
 			err.StdoutError().StopExecution()
 		}
 
-		if keySet, err := arvanConfig.SetApiKey(ApiKey).SaveConfig(); !keySet{
+		if keySet, err := arvanConfig.SetApiKey(ApiKey).SaveConfig(); !keySet {
 			err := helpers.ToBeColored{Expression: err.Error()}
 			err.StdoutError().StopExecution()
 		}

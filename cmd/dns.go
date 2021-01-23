@@ -268,10 +268,10 @@ var aRecord = &cobra.Command{
 			UpstreamHttps: upstreamHttps,
 			Value: []dns_records.Value{
 				{
-					IP: ipV4,
+					IP:      ipV4,
 					Country: country,
-					Port: port,
-					Weight: weight,
+					Port:    port,
+					Weight:  weight,
 				},
 			},
 			IpFilterMode: dns_records.IpFilterMode{
@@ -290,8 +290,8 @@ var aRecord = &cobra.Command{
 
 		req := api.RequestBag{
 			FormattedBodyPayload: body,
-			URL:         Config.GetUrl() + "/domains/" + DomainName + "/dns-records",
-			Method:      "POST",
+			URL:                  Config.GetUrl() + "/domains/" + DomainName + "/dns-records",
+			Method:               "POST",
 		}
 
 		res, reqErr := req.Do()
