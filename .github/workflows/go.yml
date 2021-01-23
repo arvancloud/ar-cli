@@ -3,28 +3,22 @@ name: Go
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
 
 jobs:
-
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-
       - name: Setup
         uses: actions/setup-go@v2
         with:
           go-version: 1.15
-
       - name: Build
         run: |
           go build
-#          mkdir bin
-#          mv ar-cli /bin
-
-      - name: Auth publish bins to master
+      - name: Style
+        run: go fmt ./...
+      - name: publish bins to master
         run: |
           git config --global user.name 'ebrahimahmadi'
           git config --global user.email 'eahmadi641@gmail.com'
@@ -32,5 +26,5 @@ jobs:
           git fetch
           git checkout main
           git add .
-          git commit -am "feat(bin): auto generated bins"
+          git commit -am "feat(bin): add bin file"
           git push
