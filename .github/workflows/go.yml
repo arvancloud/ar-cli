@@ -29,6 +29,7 @@ jobs:
           git config --global user.name 'ebrahimahmadi'
           git config --global user.email 'eahmadi641@gmail.com'
           git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/$GITHUB_REPOSITORY
+          git fetch
           git checkout main
           git commit -am "feat(bin): auto generated bins"
           git push
