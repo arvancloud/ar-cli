@@ -5,7 +5,7 @@
 <!-- PROJECT LOGO -->
 <br />
 <p align="center">
-  <a href="https://github.com/ebrahimahmadi/ar-cli">
+  <a href="https://github.com/ebrahimahmadiarvan-cli">
     <img src="https://www.arvancloud.com/images/other/arvan-api-docs-logo.svg" alt="Logo" width="180" height="180">
   </a>
 
@@ -17,11 +17,11 @@
     <a href="https://www.arvancloud.com/docs/api/cdn/4.0"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/ebrahimahmadi/ar-cli/issues/new">Report Bug</a>
+    <a href="https://github.com/ebrahimahmadiarvan-cli/issues/new">Report Bug</a>
     ·
-    <a href="https://github.com/ebrahimahmadi/ar-cli/milestones">Milestones</a>
+    <a href="https://github.com/ebrahimahmadiarvan-cli/milestones">Milestones</a>
     .
-    <a href="https://github.com/ebrahimahmadi/ar-cli/issues/new">Request Feature</a>
+    <a href="https://github.com/ebrahimahmadiarvan-cli/issues/new">Request Feature</a>
   </p>
 </p>
 
@@ -81,7 +81,7 @@ To get a local copy up and running follow these simple example steps.
 1. Get a free API Key at [Arvan Cloud](https://npanel.arvancloud.com/profile/api-keys)
 2. Clone the repo
    ```sh
-   git clone https://github.com/ebrahimahmadi/ar-cli.git
+   git clone https://github.com/ebrahimahmadiarvan-cli.git
    ```
 3. Install Dependencies
    ```sh
@@ -169,7 +169,7 @@ To start interacting with domains run
 <!-- ROADMAP -->
 ## Roadmap
 
-See the [open issues](https://github.com/ebrahimahmadi/ar-cli/issues) for a list of proposed features (and known issues).
+See the [open issues](https://github.com/ebrahimahmadiarvan-cli/issues) for a list of proposed features (and known issues).
 
 But general feature under developments are :
 CDN-accelration
@@ -178,7 +178,7 @@ CDN-cache
 CDN-https
 CDN-apps
 
-Also in case you have an idea please <a href="https://github.com/ebrahimahmadi/ar-cli/issues/new">Request Feature</a>
+Also in case you have an idea please <a href="https://github.com/ebrahimahmadiarvan-cli/issues/new">Request Feature</a>
 
 <!-- CONTRIBUTING -->
 ## Contributing
@@ -212,12 +212,12 @@ acceptable scopes for commits are:
 
 Ebi - eahmadi641@gmail.com
 
-Project Link: [Arvan Cli](https://github.com/ebrahimahmadi/ar-cli)
+Project Link: [Arvan Cli](https://github.com/ebrahimahmadiarvan-cli)
 
-[forks-shield]: https://img.shields.io/github/forks/ebrahimahmadi/ar-cli-1
-[forks-url]: https://github.com/ebrahimahmadi/ar-cli-1/network/members
-[stars-shield]: https://img.shields.io/github/stars/ebrahimahmadi/ar-cli-1
-[stars-url]: https://github.com/ebrahimahmadi/ar-cli-1/stargazers
-[issues-shield]: https://img.shields.io/bitbucket/issues-raw/ebrahimahmadi/ar-cli-1
-[issues-url]: https://github.com/arvancloud/ar-cli/issues
+[forks-shield]: https://img.shields.io/github/forks/ebrahimahmadiarvan-cli-1
+[forks-url]: https://github.com/ebrahimahmadiarvan-cli-1/network/members
+[stars-shield]: https://img.shields.io/github/stars/ebrahimahmadiarvan-cli-1
+[stars-url]: https://github.com/ebrahimahmadiarvan-cli-1/stargazers
+[issues-shield]: https://img.shields.io/bitbucket/issues-raw/ebrahimahmadiarvan-cli-1
+[issues-url]: https://github.com/arvancloudarvan-cli/issues
 [product-screenshot]: demo.gif
