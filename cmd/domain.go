@@ -3,6 +3,7 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/ebrahimahmadi/ar-cli/internals/pkg/utils"
 	"github.com/ebrahimahmadi/ar-cli/pkg/api"
 	"github.com/ebrahimahmadi/ar-cli/pkg/helpers"
 	"github.com/ebrahimahmadi/ar-cli/pkg/validator"
@@ -114,7 +115,7 @@ var search = &cobra.Command{
 		var domainInfo = new(SearchResponse)
 		_ = json.Unmarshal(responseData, &domainInfo)
 
-		table := newTable([]string{"Id", "Name", "Domain", "DNS Status", "Domain Status", "NS Key #1", "NS Key #2"})
+		table := utils.NewTable([]string{"Id", "Name", "Domain", "DNS Status", "Domain Status", "NS Key #1", "NS Key #2"})
 
 		for _, foundDomain := range domainInfo.Data {
 			record := []string{
@@ -165,7 +166,7 @@ var info = &cobra.Command{
 		var domainInfo = new(InfoResponse)
 		_ = json.Unmarshal(responseData, &domainInfo)
 
-		table := newTable([]string{"Id", "Name", "Domain", "DNS Status", "Domain Status", "NS Key #1", "NS Key #2"})
+		table := utils.NewTable([]string{"Id", "Name", "Domain", "DNS Status", "Domain Status", "NS Key #1", "NS Key #2"})
 
 		record := []string{
 			domainInfo.Data.UUID,
@@ -249,8 +250,8 @@ var nsRecords = &cobra.Command{
 		var nsRecordList = new(ListNSRecordResponse)
 		_ = json.Unmarshal(responseData, &nsRecordList)
 
-		nsKeysTable := newTable([]string{"NS Keys"})
-		nsDomainTable := newTable([]string{"NS Domain"})
+		nsKeysTable := utils.NewTable([]string{"NS Keys"})
+		nsDomainTable := utils.NewTable([]string{"NS Domain"})
 
 		for _, nsKey := range nsRecordList.Data.NSKeys {
 			record := []string{

@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"encoding/json"
+	"github.com/ebrahimahmadi/ar-cli/internals/pkg/utils"
 	"github.com/ebrahimahmadi/ar-cli/pkg/api"
 	"github.com/ebrahimahmadi/ar-cli/pkg/helpers"
 	"github.com/ebrahimahmadi/ar-cli/pkg/validator"
@@ -70,7 +71,7 @@ var csServicesStatus = &cobra.Command{
 
 		api.HandleResponseErr(res)
 
-		table := newTable([]string{"Subscribed Plan", "WAF", "DDOS Type", "Firewall Rules", "Limitation Status"})
+		table := utils.NewTable([]string{"Subscribed Plan", "WAF", "DDOS Type", "Firewall Rules", "Limitation Status"})
 
 		record := []string{
 			securityInfo.Data.Plan,
