@@ -2,8 +2,9 @@ package cmd
 
 import (
 	"encoding/json"
+	"github.com/ebrahimahmadi/ar-cli/internals/factories/dns_records"
+	"github.com/ebrahimahmadi/ar-cli/internals/utils"
 	"github.com/ebrahimahmadi/ar-cli/pkg/api"
-	"github.com/ebrahimahmadi/ar-cli/pkg/factories/dns_records"
 	"github.com/ebrahimahmadi/ar-cli/pkg/helpers"
 	"github.com/ebrahimahmadi/ar-cli/pkg/validator"
 	"io/ioutil"
@@ -92,7 +93,7 @@ var dnsList = &cobra.Command{
 		var dnsRecords = new(RecordList)
 		_ = json.Unmarshal(responseData, &dnsRecords)
 
-		table := newTable([]string{"ID", "Type", "Name", "Host", "TTL", "Cloud", "Upstream HTTPS", "Protected?", "IP GEO Filter", "IP Filter Order", "IP Filter Count"})
+		table := utils.NewTable([]string{"ID", "Type", "Name", "Host", "TTL", "Cloud", "Upstream HTTPS", "Protected?", "IP GEO Filter", "IP Filter Order", "IP Filter Count"})
 
 		for _, foundDomain := range dnsRecords.Data {
 			record := []string{
@@ -147,7 +148,7 @@ var dnsGet = &cobra.Command{
 		var dnsRecord = new(RecordInfo)
 		_ = json.Unmarshal(responseData, &dnsRecord)
 
-		table := newTable([]string{"ID", "Type", "Name", "Host", "TTL", "Cloud", "Upstream HTTPS", "Protected?", "IP GEO Filter", "IP Filter Order", "IP Filter Count"})
+		table := utils.NewTable([]string{"ID", "Type", "Name", "Host", "TTL", "Cloud", "Upstream HTTPS", "Protected?", "IP GEO Filter", "IP Filter Order", "IP Filter Count"})
 
 		record := []string{
 			dnsRecord.Data.ID,

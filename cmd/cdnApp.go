@@ -3,6 +3,7 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/ebrahimahmadi/ar-cli/internals/utils"
 	"github.com/ebrahimahmadi/ar-cli/pkg/api"
 	"github.com/ebrahimahmadi/ar-cli/pkg/helpers"
 	"github.com/ebrahimahmadi/ar-cli/pkg/validator"
@@ -70,7 +71,7 @@ var cdnAppList = &cobra.Command{
 		var cdns = new(CdnList)
 		_ = json.Unmarshal(responseData, &cdns)
 
-		table := newTable([]string{"ID", "Name", "Vendor", "Status"})
+		table := utils.NewTable([]string{"ID", "Name", "Vendor", "Status"})
 
 		for _, availableCDN := range cdns.Data {
 			record := []string{
@@ -111,7 +112,7 @@ var cdnAppInfo = &cobra.Command{
 		var cdn = new(CDNInfo)
 		_ = json.Unmarshal(responseData, &cdn)
 
-		table := newTable([]string{"ID", "Name", "Vendor", "Status"})
+		table := utils.NewTable([]string{"ID", "Name", "Vendor", "Status"})
 
 		record := []string{
 			cdn.Data.Id,
@@ -158,7 +159,7 @@ var installedApp = &cobra.Command{
 		var cdn = new(CDNInfo)
 		_ = json.Unmarshal(responseData, &cdn)
 
-		table := newTable([]string{"ID", "Name", "Vendor", "Status"})
+		table := utils.NewTable([]string{"ID", "Name", "Vendor", "Status"})
 
 		record := []string{
 			cdn.Data.Id,

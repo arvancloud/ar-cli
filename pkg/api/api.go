@@ -3,7 +3,7 @@ package api
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/ebrahimahmadi/ar-cli/pkg/config"
+	"github.com/ebrahimahmadi/ar-cli/config"
 	"github.com/ebrahimahmadi/ar-cli/pkg/helpers"
 	"net/http"
 )

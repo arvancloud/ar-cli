@@ -2,8 +2,7 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/ebrahimahmadi/ar-cli/pkg/config"
-	"github.com/olekukonko/tablewriter"
+	"github.com/ebrahimahmadi/ar-cli/config"
 	"github.com/spf13/cobra"
 	"os"
 
@@ -44,18 +43,6 @@ var helpDescriptions = map[string]string{
 	"dns-record-cloud": "If is true the cloud status will be served over cloud, otherwise no!",
 	"dns-ip": "Ip Address that should be pointed to",
 	"dns-port": "port ",
-}
-
-func newTable(tableHeaders []string) *tablewriter.Table {
-	table := tablewriter.NewWriter(os.Stdout)
-	center := 1
-
-	table.SetAlignment(center)
-	table.SetHeader(tableHeaders)
-	table.SetRowLine(true)
-	table.SetRowSeparator("~")
-
-	return table
 }
 
 var rootCmd = &cobra.Command{

@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/ebrahimahmadi/ar-cli/pkg/config"
+	"github.com/ebrahimahmadi/ar-cli/config"
 	"github.com/spf13/cobra"
 )
 
