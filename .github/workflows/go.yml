@@ -21,8 +21,8 @@ jobs:
       - name: Build
         run: |
           go build
-          mkdir bin
-          mv ar-cli /bin
+#          mkdir bin
+#          mv ar-cli /bin
 
       - name: Auth publish bins to master
         run: |
