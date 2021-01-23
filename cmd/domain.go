@@ -51,7 +51,7 @@ var domainCmd = &cobra.Command{
 	Short: "Interact with domains",
 	Long:  helpDescriptions["domain-command"],
 	Run: func(cmd *cobra.Command, args []string) {
-		// TODO: Implement logic
+		cmd.Help()
 	},
 }
 
