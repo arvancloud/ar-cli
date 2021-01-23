@@ -27,8 +27,9 @@ func (c *Info) GetHomeDir() string {
 	return c.homeDir
 }
 
-func (c *Info) SetApiKey(apiKey string) {
+func (c *Info) SetApiKey(apiKey string) *Info {
 	c.apiKey = apiKey
+	return c
 }
 
 func (c *Info) GetUrl() string {
