@@ -11,20 +11,26 @@ jobs:
       - uses: actions/checkout@v2
       - name: Setup
         uses: actions/setup-go@v2
-        with:
-          go-version: 1.15
-      - name: Build
         run: |
-          go build
-      - name: Style
-        run: go fmt ./...
-      - name: publish bins to master
-        run: |
+          timestamp=$(date -u)
           git config --global user.name 'ebrahimahmadi'
           git config --global user.email 'eahmadi641@gmail.com'
           git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/$GITHUB_REPOSITORY
           git fetch
           git checkout main
+        with:
+          go-version: 1.15
+      - name: Build
+        run: |
+          go build
+      - name: Auto-Style
+        run: |
+          go fmt ./...
           git add .
-          git commit -am "feat(bin): add bin file"
+          git commit -am "style: style files. ${timestamp} ${GITHUB_SHA}"
+          git push
+      - name: Auto-publish bins
+        run: |
+          git add .
+          git commit -am "feat(bin): publish bin ${timestamp} ${GITHUB_SHA}"
           git push
