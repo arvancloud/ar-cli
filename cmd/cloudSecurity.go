@@ -34,7 +34,7 @@ var cloudSecurityCmd = &cobra.Command{
 	Short: "Check cloud security status or update your plan",
 	Long:  helpDescriptions["cs-command"],
 	Run: func(cmd *cobra.Command, args []string) {
-
+		cmd.Help()
 	},
 }
 

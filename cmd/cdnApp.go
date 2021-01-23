@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/ebrahimahmadi/ar-cli/internals/utils"
 	"github.com/ebrahimahmadi/ar-cli/pkg/api"
 	"github.com/ebrahimahmadi/ar-cli/pkg/helpers"
@@ -41,7 +40,7 @@ var cdnAppCmd = &cobra.Command{
 	Short: "Interact with cdn app service",
 	Long:  helpDescriptions["cdnapp-command"],
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("cdnApp called")
+		cmd.Help()
 	},
 }
 

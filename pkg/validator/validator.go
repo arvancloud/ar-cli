@@ -10,6 +10,10 @@ import (
 	"strings"
 )
 
+const (
+	IPv6len = 16
+)
+
 func HasString(searchTerm string, keys []string) (bool, error) {
 	sort.Strings(keys)
 	i := sort.SearchStrings(keys, searchTerm)
@@ -52,9 +56,23 @@ func IsDomain(domain string) (bool, error) {
 	return true, nil
 }
 
-func IsValidIp(ip string) (bool, error) {
-	if net.ParseIP(ip) == nil {
+func IsValidIpv4(ip string) (bool, error) {
+	addr, _ := net.ResolveTCPAddr("tcp", ip)
+
+	if addr.IP.To4() == nil {
 		return false, errors.New("not a valid IP address")
+	}
+
+	return true, nil
+}
+
+func IsValidIpv6(ip string) (bool, error) {
+
+	addr, _ := net.ResolveTCPAddr("tcp", ip)
+	isIpv6 := len(ip) == IPv6len && addr.IP.To4() == nil
+
+	if !isIpv6 {
+		return false, errors.New("not a valid IPv6 address")
 	}
 
 	return true, nil
