@@ -12,13 +12,13 @@ import (
 )
 
 type SecurityInfo struct {
-	Data struct{
-		Plan string `json:"plan"`
-		WAFStatus string `json:"waf_status"`
-		DDOSType string `json:"ddos_type"`
-		FWRules int `json:"firewall_rules"`
-		LimitationStatus bool `json:"limitation_status"`
-	}`json:"data"`
+	Data struct {
+		Plan             string `json:"plan"`
+		WAFStatus        string `json:"waf_status"`
+		DDOSType         string `json:"ddos_type"`
+		FWRules          int    `json:"firewall_rules"`
+		LimitationStatus bool   `json:"limitation_status"`
+	} `json:"data"`
 }
 
 var cloudSecurityPlan string
@@ -32,7 +32,7 @@ var cloudSecurityAvailablePlans = []string{
 var cloudSecurityCmd = &cobra.Command{
 	Use:   "cloud-security",
 	Short: "Check cloud security status or update your plan",
-	Long: helpDescriptions["cs-command"],
+	Long:  helpDescriptions["cs-command"],
 	Run: func(cmd *cobra.Command, args []string) {
 
 	},
@@ -107,8 +107,8 @@ var csUpdatePlan = &cobra.Command{
 
 		request := api.RequestBag{
 			BodyPayload: map[string]interface{}{"plan": cloudSecurityPlan},
-			URL:    Config.GetUrl() + "/domains/" + DomainName + "/security-service/plan",
-			Method: "PUT",
+			URL:         Config.GetUrl() + "/domains/" + DomainName + "/security-service/plan",
+			Method:      "PUT",
 		}
 
 		res, err := request.Do()

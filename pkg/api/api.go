@@ -19,11 +19,11 @@ var potentialErrMessages = map[int]string{
 }
 
 type RequestBag struct {
-	BodyPayload map[string]interface{}
+	BodyPayload          map[string]interface{}
 	FormattedBodyPayload []byte
-	URLQueries  map[string]string
-	URL         string
-	Method      string
+	URLQueries           map[string]string
+	URL                  string
+	Method               string
 }
 
 func (r *RequestBag) Do() (*http.Response, error) {
@@ -32,7 +32,7 @@ func (r *RequestBag) Do() (*http.Response, error) {
 
 	if r.BodyPayload != nil {
 		body, jsonErr = json.Marshal(r.BodyPayload)
-	}else {
+	} else {
 		body = r.FormattedBodyPayload
 	}
 

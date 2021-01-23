@@ -173,7 +173,6 @@ var installedApp = &cobra.Command{
 	},
 }
 
-
 var installApp = &cobra.Command{
 	Use:   "install",
 	Short: "Install the application on the domain",
@@ -206,7 +205,6 @@ var installApp = &cobra.Command{
 	},
 }
 
-
 var uninstallApp = &cobra.Command{
 	Use:   "uninstall",
 	Short: "Uninstall application from the domain",
@@ -238,7 +236,6 @@ var uninstallApp = &cobra.Command{
 		info.StdoutNotice()
 	},
 }
-
 
 var triggerWebHook = &cobra.Command{
 	Use:   "trigger",

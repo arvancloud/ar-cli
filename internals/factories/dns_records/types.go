@@ -1,6 +1,5 @@
 package dns_records
 
-
 var TTLs = []int{
 	120, 180, 300, 600, 900, 1800, 3600, 7200, 18000, 43200, 86400, 172800, 432000,
 }
@@ -32,10 +31,10 @@ type ARecord struct {
 }
 
 type AAAARecord struct {
-	IP string
+	IP      string
 	Country string
-	Port int
-	Weight int
+	Port    int
+	Weight  int
 }
 
 type IpFilterMode struct {
@@ -46,13 +45,13 @@ type IpFilterMode struct {
 
 type Value struct {
 	IP      string `json:"ip"`
-	Country string	`json:"country"`
-	Port    int `json:"port"`
-	Weight  int `json:"weight"`
+	Country string `json:"country"`
+	Port    int    `json:"port"`
+	Weight  int    `json:"weight"`
 }
 
 type MXRecord struct {
-	Host string
+	Host     string
 	Priority int
 }
 
@@ -62,9 +61,9 @@ type NSRecord struct {
 
 type SRVRecord struct {
 	TargetHost string
-	Port int
-	Weight int
-	Priority int
+	Port       int
+	Weight     int
+	Priority   int
 }
 
 type TXTRecord struct {
@@ -80,12 +79,12 @@ type DKIMRecord struct {
 }
 
 type ANAMERecord struct {
-	Location string
+	Location   string
 	HostHeader string
 }
 
 type CNAMERecord struct {
-	Location string
+	Location   string
 	HostHeader string
 }
 

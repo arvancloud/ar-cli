@@ -10,7 +10,7 @@ import (
 type Info struct {
 	apiVersion     string
 	apiKey         string
-	apiUrl		   string
+	apiUrl         string
 	configFilePath string
 	homeDir        string
 }
@@ -35,7 +35,6 @@ func (c *Info) SetApiKey(apiKey string) *Info {
 func (c *Info) GetUrl() string {
 	return c.apiUrl
 }
-
 
 func (c *Info) Complete() error {
 	c.homeDir, _ = defaultHomeDir()
@@ -62,7 +61,7 @@ func (c *Info) SaveConfig() (bool, error) {
 	configFileStruct := configFile{
 		ApiVersion: c.apiVersion,
 		ApiKey:     c.apiKey,
-		ApiUrl:		c.apiUrl,
+		ApiUrl:     c.apiUrl,
 	}
 
 	configFileStr, err := yaml.Marshal(&configFileStruct)

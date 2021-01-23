@@ -20,7 +20,7 @@ func HasString(searchTerm string, keys []string) (bool, error) {
 		return true, nil
 	}
 
-	return  false, errors.New(searchTerm + " Is Illegal. Value should be one of " + strings.Join(keys,", "))
+	return false, errors.New(searchTerm + " Is Illegal. Value should be one of " + strings.Join(keys, ", "))
 }
 
 func HasInt(searchTerm int, keys []int) (bool, error) {
@@ -33,7 +33,7 @@ func HasInt(searchTerm int, keys []int) (bool, error) {
 		return true, nil
 	}
 
-	return  false, errors.New(strconv.Itoa(searchTerm) + " Is Illegal. Value should be one of " + strings.Trim(strings.Replace(fmt.Sprint(keys), " ", ", ", -1), "[]"))
+	return false, errors.New(strconv.Itoa(searchTerm) + " Is Illegal. Value should be one of " + strings.Trim(strings.Replace(fmt.Sprint(keys), " ", ", ", -1), "[]"))
 }
 
 func IsApiKey(apiKey string) (bool, error) {
