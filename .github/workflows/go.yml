@@ -30,10 +30,10 @@ jobs:
         run: |
           git add .
           git commit -am "feat(bin): publish bin ${timestamp} ${GITHUB_SHA}"
+          git push
       - name: Auto-Style
         run: |
           go fmt ./...
           git add .
           git commit -am "style: style files. ${timestamp} ${GITHUB_SHA}"
-      - name: push
-        run: git push
+          git push
