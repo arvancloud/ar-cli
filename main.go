@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/ebrahimahmadi/ar-cli/cmd"
-	"github.com/ebrahimahmadi/ar-cli/pkg/config"
+	"github.com/ebrahimahmadi/ar-cli/config"
 	"log"
 )
 

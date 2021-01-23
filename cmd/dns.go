@@ -2,8 +2,8 @@ package cmd
 
 import (
 	"encoding/json"
+	"github.com/ebrahimahmadi/ar-cli/internals/pkg/factories/dns_records"
 	"github.com/ebrahimahmadi/ar-cli/pkg/api"
-	"github.com/ebrahimahmadi/ar-cli/pkg/factories/dns_records"
 	"github.com/ebrahimahmadi/ar-cli/pkg/helpers"
 	"github.com/ebrahimahmadi/ar-cli/pkg/validator"
 	"io/ioutil"
