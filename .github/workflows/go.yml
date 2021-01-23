@@ -9,8 +9,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+
       - name: Setup
         uses: actions/setup-go@v2
+        with:
+          go-version: 1.15
+
+      - name: Setup
         run: |
           timestamp=$(date -u)
           git config --global user.name 'ebrahimahmadi'
@@ -20,17 +25,18 @@ jobs:
           git checkout main
         with:
           go-version: 1.15
+
       - name: Build
         run: |
           go build
+      - name: Auto-publish bins
+        run: |
+          git add .
+          git commit -am "feat(bin): publish bin ${timestamp} ${GITHUB_SHA}"
       - name: Auto-Style
         run: |
           go fmt ./...
           git add .
           git commit -am "style: style files. ${timestamp} ${GITHUB_SHA}"
-          git push
-      - name: Auto-publish bins
-        run: |
-          git add .
-          git commit -am "feat(bin): publish bin ${timestamp} ${GITHUB_SHA}"
-          git push
+      - name: push
+        run: git push
